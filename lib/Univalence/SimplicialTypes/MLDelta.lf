@@ -1,0 +1,10 @@
+> module MLDelta where;
+
+> import MLStnIntervals;
+> import Nat_arith;
+
+Type of injective monotonic maps from (Stn n) to (Stn n + m + 1).
+
+> Claim Delta : (n, m : Nat)Type^0;
+> Intros n;
+> Refine E_Nat [m:Nat]Type^0;

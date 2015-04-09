@@ -1,0 +1,33 @@
+> module Nat_LEq_Ex where;
+
+LEq in Nat, based on Exists statement
+
+> import Nat;
+> import Ord;
+> import Nat_arith;
+> import Nat_Eq;
+
+
+> [ nat_leq = [m,n:Nat]Ex Nat ([k:Nat]eq n (plus m k)) ];
+
+
+theorems about it here....
+
+
+
+-----------
+
+dict instance(s)
+
+> [ d_eq_Nat : D_Eq Nat ];	-- just assume for now
+> [ per_leq : Prf(c_PreOrder Nat nat_leq)];
+
+> Claim d_ord_Nat : D_Ord Nat;
+> Refine d_ord;
+> 3 Refine nat_leq;
+> Immed;
+> &F Qed;
+
+
+
+

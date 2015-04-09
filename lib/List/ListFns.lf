@@ -1,0 +1,74 @@
+> module ListFns where;
+
+GENERAL list functions (ie, polymorphic on element type)
+
+> import List;
+> import Nat;
+> import Bool;
+
+> Claim append : (A:Type)(l:List A)(m:List A)List A;
+> Intros A l m;
+> Refine E_List ? ([_:List A]List A) ? ? l;
+> 2 Refine m;
+> Intros x xs rs;
+> Refine cons ? x rs;
+> ReturnAll;
+
+> [ singleton = [A:Type][a:A]cons A a (nil A)];
+
+
+---
+
+<> append ? (singleton ? (succ zero)) (singleton ? (succ (succ zero))) 
+<>					= (cons ? (succ zero) (singleton ? (succ (succ zero))));
+
+DELETE TESTS LATER.
+
+
+@ length of a list.
+ 
+> Claim len : (A:Type)(l:List A)Nat;
+> Intros A l;
+> Refine E_List A ([_:List A]Nat) zero ? l; 
+> Refine [_:A][_:List A]succ;
+> ReturnAll;
+
+<> ehnf (len ? (cons ? (succ zero) (singleton ? (succ (succ zero)))));
+
+----
+
+WANT TO INFER THIS AUTOMATICALLY.
+
+> Claim map : (A,B:Type) (A -> B) -> List A -> List B;  
+> Intros  _ _ f; 
+> Refine E_List ? ([_:?]List B) ? ?;
+> 2 Refine nil;
+> Intros x _;
+> Refine cons ? (f x);
+> ReturnAll;
+
+> [List_Iter = map ];		-- correct? 
+
+<> &F Claim dmap : (A:Type)(B:A->Type)(f:(x:A)B x) List A -> List B; 
+
+---
+
+> Claim foldr : (A,B:Type)(A -> B -> B) -> B -> List A -> B;
+> Intros _ _ f i; 
+> Refine E_List ? ([_:?]B) i; 
+> Intros x _;
+> Refine f x;
+> ReturnAll;
+
+> [List_Rec = foldr ];
+
+
+---
+
+> Claim is_nil : (A:Type) List A -> Bool;
+> Refine [A:Type]E_List ? ([_:List A]Bool) true ([_:A][_:List A][_:Bool]false);
+> ReturnAll;
+
+> Claim is_cons : (A:Type) List A -> Bool;
+> Refine [A:Type]E_List ? ([_:List A]Bool) false ([_:A][_:List A][_:Bool]true);
+> ReturnAll;

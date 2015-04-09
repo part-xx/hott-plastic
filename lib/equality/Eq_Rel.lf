@@ -1,0 +1,34 @@
+> module Eq_Rel where;
+
+> import Sol;
+> import Function;
+
+> Inductive [A:Type][Eq : (x,y:El A) El Prop] Relation_LE
+>  Constructors [eqr:(a:El A)Prf(Eq a a)];
+
+> [ Eq_refl = eqr 
+>           : (A:Type)(a:A)Prf(Eq ? a a) ];
+
+> Claim Eq_sym : (A:Type)(x,y:A)Prf(Eq ? x y) -> Prf(Eq ? y x);
+> Intros _ _ _;
+> Refine E_Eq ? [x,y:A]Prf(Eq ? y x);
+> Refine eqr;
+> ReturnAll;
+
+> Claim Eq_subst : (A:Type)(x,y:A)Prf(Eq ? x y) -> (P:A -> Type)P x -> P y;
+> Intros _ _ _ H P;
+> Refine ap_;
+> Refine E_Eq ? [x,y:A]Pi_ (P x) (P y);
+> Refine H;
+> Refine [a:?]La_ ? ? [x:?]x;
+> ReturnAll;
+>  -- NB maybe should reorder  Eq to make it more realistic in use.???
+
+> Claim Eq_resp : (A,B:Type)(f:A->B)(x,y:A)Prf (Eq A x y) -> Prf(Eq B (f x) (f y));
+> Intros _ _ _ _ _;
+> Refine E_Eq ? [x,y:A]Prf(Eq ? (f x) (f y));
+> Refine [a:?]eqr ? ?;
+> ReturnAll;
+
+<> Eq_resp;
+

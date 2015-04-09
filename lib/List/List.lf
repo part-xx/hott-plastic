@@ -1,0 +1,9 @@
+> module List where
+
+> Inductive 
+>	[A:Type]
+>	[List:Type]
+>   Constructors 
+>	[nil:List]
+>	[cons:(a:El A)(l:List)List]
+

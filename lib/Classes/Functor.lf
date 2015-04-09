@@ -1,0 +1,38 @@
+> module Functor where;
+
+as per Haskell
+
+THIS IS AN INVALID SCHEMA
+
+DO WE NEED UNIVERSES HERE?
+
+> Inductive 
+>       [M:Type->Type][D_Functor : Type]
+>       Constructors
+>       [ d_functor : (f:(A,B:Type)(A -> B) -> M A -> M B)
+>                     D_Functor];
+
+how about full DP for the map fn? 
+	BUT (A:Type)(B:A->Type)((x:A)B x) M A -> M (B ?)
+	need extra arg? or fish it out of M A? 
+
+> Claim fmap : (M:Type->Type) D_Functor M -> (A,B:Type)(A -> B) -> M A -> M B;
+> Intros M d;
+> Intros A B f ma;
+> Refine E_D_Functor M ([_:D_Functor M]M B) ? d;
+> Intros f1;
+
+> Refine f1; 
+> &F Refine ma;
+> 3 Refine A;
+> Refine ma;
+> Undo x4;
+BUG: refine on mvar-free term, which should result in solution.
+     (strict) conv is used, but we want unification to work.
+
+     it is ok if solve for A first.
+
+> Refine f1 A B f ma;
+> ReturnAll;
+> fmap;
+

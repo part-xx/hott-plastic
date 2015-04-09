@@ -1,0 +1,61 @@
+> module BoolFns where;
+
+Basic functions on bool.
+
+Mainly predicates - Eq and proofs concerning it.
+
+> import Bool;
+> import Sol_Basics;
+> import Sol_AndOr;
+
+%-------------------------------------------------------------------------------
+Simple tests on Bool
+
+> [is_true  = E_Bool ([_:Bool]Prop) tautology absurd];
+> [is_false = E_Bool ([_:Bool]Prop) absurd    tautology];
+
+
+Clearer synonym
+
+> [ Bool_to_Prop = is_true : Bool -> Prop ];
+
+
+-----------------------------
+
+
+> Claim true_or_false : (b:Bool)Prf ((is_true b) `or` (is_false b));
+> Refine E_Bool ([b:Bool]Prf ((is_true b) `or` (is_false b)));
+> Refine App ? ? (p_inr (is_true false) (is_false false));
+> Refine prf_tautology;
+> Refine App ? ? (p_inl (is_true true) (is_false true));
+> Refine prf_tautology;
+> ReturnAll;
+> true_or_false;
+
+
+---
+
+> [if = [b:Bool][A:Type][yes,no:A]E_Bool ([_:Bool]A) yes no b
+>     : (b:Bool)(A:Type) A -> A -> A ];
+
+
+---
+
+Use captial letters for comp. form.
+
+> [ Not = E_Bool ([_:Bool]Bool) false true : Bool -> Bool ];
+> [ And = [x,y:Bool]if x Bool y false ];
+> [ Or  = [x,y:Bool]if x Bool true y  ];
+
+---
+
+> Claim BoolRel_to_Rel : (A:Type) (A -> A -> Bool) -> (A -> A -> Prop);
+> Intros A br x y;
+> Refine Bool_to_Prop (br x y);
+> ReturnAll;
+ 
+Note: this doesn't fit the pattern for proper coercions, but via the DP rules
+	  and a coercion Bool to Prop we get the same effect.
+  
+---
+

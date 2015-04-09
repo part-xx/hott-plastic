@@ -1,0 +1,6 @@
+> module BoolCoercion where;
+
+> import BoolFns;
+
+> Coercion = is_true : Bool -> Prop;
+

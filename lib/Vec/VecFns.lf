@@ -1,0 +1,152 @@
+> module VecFns where;
+
+simple vector fns.
+
+> import Vec;
+> import Nat_arith;
+> import Bool;
+
+> import ML_Equality;
+> import Nat_theorems;
+> import Nat_plus_theorems;
+
+> import Empty;
+> import Peano4;
+
+---
+
+> [is_vnil [A:Type]
+>    = E_Vec A ([n:Nat][_:Vec A n]Bool) 
+>			   true 
+>			   ([n:Nat][_:A][_:Vec A n][_:Bool]false)
+>    : (n:Nat) Vec A n -> Bool];
+
+> [is_vcons [A:Type]
+>    = E_Vec A ([n:Nat][_:Vec A n]Bool) 
+>			   false 
+>			   ([n:Nat][_:A][_:Vec A n][_:Bool]true)
+>    : (n:Nat) Vec A n -> Bool];
+
+
+---
+
+> [vec_singleton 
+>   = [A:Type][a:A] vcons A zero a (vnil A)
+>   : (A:Type)(a:A) Vec A (succ zero) ];
+
+---
+
+> Claim vec_len : (A:Type)(n:Nat) Vec A n -> Nat;
+> Intros _ n _;
+> Refine n;
+> ReturnAll;
+
+---
+
+> Claim vec_map : (A,B:Type)(f:A->B)(n:Nat)Vec A n -> Vec B n;
+> Intros A B f n;
+> Refine E_Vec A ([n:Nat][_:Vec A n]Vec B n);
+> 2 Refine vnil;
+> Intros m x _ xs;
+> Refine vcons ? ? (f x) xs;
+> ReturnAll;
+
+
+---
+
+want: [a,b,c] + [d,e,f] = [a,b,c,d,e,f]
+implies induction on first.
+
+NOTES: 
+ - observe parallel between plus elim on first arg, and so does this fn...
+
+> Claim vec_append : (A:Type)(m,n:Nat) Vec A m -> Vec A n -> Vec A (plus m n);
+> Intros A m n v_m v_n;
+> Refine E_Vec A ([m:Nat][_:Vec A m]Vec A (plus m n)) ?nil ?not_nil ? v_m;
+> 2 Refine v_n;
+> Intros m_ x xs r_xs;
+> Refine vcons A ? x r_xs;
+> ReturnAll;
+
+test
+<> [A:Type][a,b,c:A];
+<> vec_append ? ? ? (vcons ? ? a (vcons ? ? b vnil)) (vcons ? ? c vnil)
+<>   = vcons ? ? a (vcons ? ? b (vcons ? ? c vnil));
+
+---
+
+Elimination for non-empty Vectors.
+
+> Claim E_Vec_NonEmpty
+>    : (A,B:Type)(n:Nat) (A -> Vec A n -> B) -> (Vec A (succ n)) -> B;
+> Intros A B n f; 
+> [phi = [Phi : (x:Nat) Vec A x -> (Eq Nat x (succ n))->B]
+>        [v:Vec A (succ n)]
+>        Phi ? v (Eq_refl ? (succ n))];
+> Refine phi;
+> Intros x v;
+> Intros H0;		-- need for later, nb weak lemma mechanism.
+
+> Claim lemma : Eq Nat x (succ n) ==> B;
+> Refine E_Vec ? ([x:Nat][_:Vec A x] Eq Nat x (succ n) ==> B) ?base ? ? v; 
+> -- step case first
+> Intros _ a as _;
+> Refine La_;
+> Intros eq_s_mn;
+> Refine f a;
+> [ eq_mn = inj_succ ? ? eq_s_mn ];
+> Refine eq_mn;
+> Intros eq_mn;
+> Refine Eq_subst ? ? ? ([x:Nat]Vec A x) eq_mn;
+> Refine as;
+> ReturnAll;
+> -- now base case.
+> Refine La_;
+> Intros H;
+> Refine empty_elim;
+> Refine ap_ ? ? (zero_not_succ ?) H;
+> ReturnAll;
+
+> Refine ap_ ? ? lemma H0;
+> ReturnAll;
+
+
+---
+Leading to easy definitions of 
+
+> [vtail 
+>   = [A:Type][n:Nat] E_Vec_NonEmpty A (Vec A n) n ([_:A][as:Vec A n]as)
+>   : (A:Type)(n:Nat) Vec A (succ n) -> Vec A n ];
+
+> [vhead 
+>   = [A:Type][n:Nat]E_Vec_NonEmpty A A n ([a:A][_:Vec A n]a)
+>   : (A:Type)(n:Nat) Vec A (succ n) -> A ];
+
+
+---
+
+TODO 
+
+> Claim vec_reverse : (A:Type)(n:Nat) Vec A n -> Vec A n;
+> Intros A n;
+> Refine E_Vec A ([n:Nat][_:Vec A n]Vec A n) ?nil ;
+> 2 Refine vnil;
+> Intros n_ x xs r_xs;
+> Refine Eq_subst ? ? ? ([x:Nat]Vec A x);
+		-- NB this calculates the form of Eq. required.
+		-- bit more than qrepl?
+
+> Refine vec_append ? ? ? r_xs (vcons ? ? x (vnil ?));
+> Refine Eq_subst ? ? ?  ([x:Nat]Eq ? x (succ n_)) plus_commutes;
+> Refine Eq_refl;
+> ReturnAll;
+
+test
+<> [A:Type][a,b,c:A];
+<> vec_reverse ? ? (vcons ? ? a (vcons ? ? b (vcons ? ? c vnil)))
+<>	= (vcons ? ? c (vcons ? ? b (vcons ? ? a vnil)));
+
+ 
+
+
+

@@ -1,0 +1,46 @@
+> module Sol_Misc where;
+
+THIS MODULE DOESN'T WORK!
+
+> import Sol_AndOr;
+
+%-------------------------------------------------------------------------------
+Iff
+
+> [ c_iff = [p,q:Prop](p => q) .and (q => p) : Prop -> Prop -> Prop ];
+
+this is just an abbreviation, so should really leave it like this.
+ie, can't lift to prop...
+
+> Claim p_iff : c_iff; 
+
+
+%-------------------------------------------------------------------------------
+Misc things
+
+Contrapos = [H:A->B][X|Prop][H1:B->X][H2:A]H1 (H H2)
+		  : (A->B)->{X|Prop}(B->X)->A->X
+
+> Claim c_Contrapos : (A,B:Prop)Prf ((A => B) => {X:Prop}(B => X) => (A => X))
+> Intros A B
+
+> Refine LL
+> Intros pAB
+
+> Refine LL
+> Intros B
+
+> Refine LL
+> Intros pBX
+
+> Refine LL 
+> Intros pA
+
+> Refine App ? ? pBX
+> Refine App ? ? pAB
+> Refine pA
+> ReturnAll
+
+
+
+

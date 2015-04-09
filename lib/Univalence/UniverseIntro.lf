@@ -1,0 +1,10 @@
+> module UniverseIntro where;
+
+> import Nat_TypeN;
+> import Either;
+> import Unit;
+> import TypeN;
+
+> AddToUniverse Type^ Either;
+> AddToUniverse Type^ Unit;
+ AddToUniverse Type^ 

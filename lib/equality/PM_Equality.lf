@@ -1,0 +1,66 @@
+> module PM_Equality where;
+
+Paulin-Mohring Inductive equality
+
+<> import Sol;	NOT YET...
+<> import Sol_Relations;
+
+
+> Inductive 
+>	[A:Type][x:El A][Eq:(y:El A)Type] 
+>	Constructors
+>	[Eqr:Eq x];
+
+(results match the lego form...)
+
+zl says: equiv. to ML version, although difference in arg. order could mean
+some proofs are made easier/harder. 
+
+
+
+%---------------------------------------
+
+> Claim Eq_refl : (T:Type) (x:T)Eq ? x x; 
+> Refine Eqr;
+> ReturnAll;
+	-- need a QED marker? 
+
+
+> Claim Eq_sym : (T:Type)(x,y:T) Eq T x y -> Eq T y x;
+> Intros T x y; 
+> Refine E_Eq T x ([z:T][_:Eq T x z]Eq T z x);
+> Refine Eq_refl;
+> ReturnAll;
+
+NOTE: can we generalise c_Sym up to Type (>> Sol) level? 
+
+
+> import Function; 
+
+> Claim Eq_trans : (T:Type)(x,y,z:T)Eq T x y -> Eq T y z -> Eq T x z;
+> Intros _ _ _ _ eq_xy;
+> Refine ap_ ;
+> Refine E_Eq ? x ([y:T][_:Eq T x y]Eq T y z ==> Eq T x z) ? ? eq_xy;
+> Refine Id;
+> ReturnAll;
+
+
+---------------
+
+> Claim Eq_subst : (T:Type)(m,n:T)(f:T->Type) Eq T m n -> f m -> f n; 
+> Intros T m n f eq_mn;
+> Refine ap_ ? ? ?pi_fm_fn;
+> Refine E_Eq ? m ([n:T][_:Eq T m n]f m ==> f n) ? ? eq_mn;
+> Refine Id;
+> ReturnAll;
+
+
+------------
+
+> Claim Eq_resp : (A,B:Type)(f:A->B)(x,y:A)Eq A x y -> Eq B (f x) (f y);
+> Intros A B f x y;
+> Refine E_Eq ? x ([y:A][_:Eq A x y]Eq B (f x) (f y));
+> Refine Eq_refl;
+> ReturnAll;
+
+

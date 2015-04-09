@@ -1,0 +1,11 @@
+
+> module ListCoercion where
+
+> import List
+> import ListFns
+ 
+> Coercion
+>       Parameters [A,B:Type][f:A->B]
+>       Prerequisites f
+>       = map A B f : List A -> List B
+

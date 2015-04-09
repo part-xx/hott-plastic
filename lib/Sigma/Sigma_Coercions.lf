@@ -1,0 +1,11 @@
+> module Sigma_Coercions where;
+
+> import Sigma;
+ 
+> Coercion
+>   Parameters [A:Type][B:A->Type]
+>    = pi1 A B : (s:El (Sigma A B)) El A
+
+> Coercion
+>   Parameters [A:Type][B:A->Type]
+>    = pi2 A B : (s:El (Sigma A B)) El (B (pi1 A B s));

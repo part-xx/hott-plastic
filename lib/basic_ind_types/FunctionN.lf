@@ -1,0 +1,13 @@
+> module FunctionN where;
+
+Provide the universe version of non-dependant PI types.
+
+> import TypeN;
+> import Function;
+
+> AddToUniverse Type^ Pi_ ;
+
+Convenience abbreviations.
+
+> [Pi__0 = Pi__Type^0];
+> [Pi__1 = Pi__Type^1];

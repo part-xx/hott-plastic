@@ -1,0 +1,40 @@
+> module Ord where;
+
+> import Sol_Relations;
+> import Eq;
+> import BoolFns;
+
+Require ordering to be a pre-order rel, and based on Eq. 
+
+
+> Inductive
+>	[A:Type]
+>	[D_Ord : Type]
+>	Constructors
+>	[d_ord : (r: (x:El A)(y:El A)El Bool)
+>	         (e: El (D_Eq A))
+>	         (p: El (Prf(c_PreOrder A (BoolRel_to_Rel A r))))
+>	         D_Ord ];
+
+> Claim leq : (A:Type) D_Ord A -> A -> A -> Bool;
+> Intros A d x y;
+> Refine E_D_Ord ? ([_:D_Ord A]Bool) ? d;
+> Intros r _ _;
+> Refine r x y;
+> ReturnAll;
+
+
+---
+extract the Eq part
+
+> Claim ord_to_eq : (A:Type) D_Ord A -> D_Eq A;
+> Intros A;
+> Refine E_D_Ord ? ([_:D_Ord A]D_Eq A);
+> Intros _ e _;
+> Refine e;
+> ReturnAll;
+
+good as a coercion! 
+
+> Coercion Parameters [A:Type] = ord_to_eq A : D_Ord A -> D_Eq A;
+

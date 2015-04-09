@@ -1,0 +1,37 @@
+> module Nat_numbers where
+
+> import Nat
+> import Nat_arith
+
+%-------------------------------------------------------------------------------
+
+Easy names for small numbers.
+
+> [one   = zero . succ ]
+> [two   = zero . succ . succ ]
+> [three = zero . succ . succ . succ ]
+> [four  = zero . succ . succ . succ . succ ]
+> [five  = zero . succ . succ . succ . succ . succ ]
+> [six   = zero . succ . succ . succ . succ . succ . succ ]
+> [seven = zero . succ . succ . succ . succ . succ . succ . succ ]
+> [eight = zero . succ . succ . succ . succ . succ . succ . succ . succ ]
+
+> [nine      = succ eight ]
+> [ten       = succ nine ]
+> [eleven    = succ ten ]
+> [twelve    = succ eleven ]
+> [thirteen  = succ twelve ]
+> [fourteen  = succ thirteen ]
+> [fifteen   = succ fourteen ]
+> [sixteen   = succ fifteen ]
+> [seventeen = succ sixteen ]
+> [eighteen  = succ seventeen ]
+> [nineteen  = succ eighteen ]
+> [twenty    = succ nineteen ]
+
+> [thirty = twenty .plus ten ]
+> [forty  = twenty .plus twenty ]
+> [fifty  = thirty .plus twenty ]
+
+> [hundred = fifty .plus fifty ]
+

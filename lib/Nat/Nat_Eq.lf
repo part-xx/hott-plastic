@@ -1,0 +1,89 @@
+> module Nat_Eq where;
+
+Eq for Nat - by structure
+
+> import Nat;
+> import Nat_theorems;
+> import Nat_dbl_elim; 
+
+> import Eq;
+> import Fundamentals;
+
+
+> Claim Eq_Nat : Nat -> Nat -> Bool;
+> Intros x;
+> Refine ap_;
+> Refine E_Nat ([_:Nat]Nat ==> Bool) ?x_zero ?x_succ x;
+> x_zero Refine La_ ? ? is_zero;
+> Intros x r_x;
+> Refine La_;
+> Refine E_Nat ([_:Nat]Bool) ?y_zero ?y_succ; 
+> y_zero Refine false;
+> Intros y _;
+> Refine ap_ ? ? r_x y;
+> ReturnAll;
+
+-----
+
+
+> Claim Eq_Nat_refl : Prf (c_Refl ? (BoolRel_to_Rel ? Eq_Nat));
+> Refine LL;
+
+> Refine E_Nat ([x:Nat]Prf (BoolRel_to_Rel Nat Eq_Nat x x));
+> 2 Refine prf_tautology;
+> Intros n; 
+> Refine id;
+> ReturnAll;
+
+----
+
+> Claim sym_lemma : (x,y:Nat)Eq Bool (Eq_Nat x y) (Eq_Nat y x);
+> Refine Nat_dbl_elim ([x,y:Nat]Eq Bool (Eq_Nat x y) (Eq_Nat y x));
+> -- go backwards
+
+> Intros m H1 n H2;
+> Equiv Eq Bool (Eq_Nat m n) (Eq_Nat n m);
+> Refine H1 n;
+> ReturnAll;
+
+> Intros m H1;
+> Refine Eq_refl;
+> ReturnAll;
+
+> Intros n H1;
+> Refine Eq_refl;
+> ReturnAll;
+
+> Refine Eq_refl;
+> ReturnAll;
+
+
+> Claim Eq_Nat_sym : Prf (c_Sym ? (BoolRel_to_Rel ? Eq_Nat));
+> Refine LL;
+> Intros x0;
+> Refine LL;
+> Intros y0;
+> Refine Eq_subst ? ? ? ([x:Prop]Prf (BoolRel_to_Rel Nat Eq_Nat x0 y0 => x));
+> 2 Refine Eq_resp Bool Prop Bool_to_Prop ? ?  (sym_lemma x0 y0);
+> Refine PropId;
+> ReturnAll;
+
+
+
+----
+
+<> Claim trans_lemma : (x,y,z:Nat) Eq Bool x y  ???
+
+> Claim Eq_Nat_trans : Prf (c_Trans ? (BoolRel_to_Rel ? Eq_Nat));
+> -- not proved here.
+
+
+-------------------------
+
+> Claim d_Eq_Nat : D_Eq Nat;
+> Refine d_eq ? Eq_Nat;
+> Refine f_pair ? ? Eq_Nat_refl (f_pair ? ? Eq_Nat_sym ?);
+> Refine Eq_Nat_trans;
+> ReturnAll;
+
+

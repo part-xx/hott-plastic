@@ -1,0 +1,86 @@
+> module Nat_Ord where;
+
+LEq in Nat, based on Booleans
+
+> import Nat;
+> import Bool;
+> import Function;
+> import BoolFns_;
+
+<> import Ord;
+<> import Nat_Eq;
+
+====================
+
+Less than or equal relation.
+
+====================
+
+> Claim LEq_Nat : Nat -> Nat -> Bool;
+> Intros x;
+> Refine ap_;
+> Refine E_Nat ([_:Nat]Nat ==> Bool) ? ? x;
+> 2 Refine La_ ? ? ([_:Nat]true);		-- 0 <= y
+> Intros x_ fx_;
+> Refine La_;
+> Refine E_Nat ([_:Nat]Bool) ? ?; 
+> 2 Refine false;						-- (s x) <= 0 is FALSE
+> Intros y_ _;
+> Refine ap_ ? ? fx_ y_;
+> ReturnAll;
+> LEq_Nat;
+
+TESTS
+<> LEq_Nat (succ zero) (succ zero) = true;
+<> LEq_Nat (succ zero) zero = false;
+<> LEq_Nat (succ zero) (succ (succ zero)) = true;
+<> LEq_Nat (succ (succ zero)) (succ zero) = false;
+
+
+-----------------
+THEOREMS.
+
+
+<> Claim LEq_Nat_refl : Prf (c_Refl Nat (BoolRel_to_Rel ? LEq_Nat));
+<> Refine LL;
+<> Refine E_Nat ([x:Nat]Prf (BoolRel_to_Rel Nat LEq_Nat x x));
+<> 2 Refine prf_tautology;
+<> Intros x_;
+<> Refine id;
+<> ReturnAll;
+
+
+<> Claim LEq_Nat_trans : Prf (c_Trans Nat (BoolRel_to_Rel ? LEq_Nat));
+<> -- don't fancy it today.
+
+
+
+----
+
+dict instance(s)
+
+<> Claim d_Ord_Nat : D_Ord Nat;
+<> Refine d_ord ? LEq_Nat d_Eq_Nat; 
+<> Refine f_pair ? ? LEq_Nat_refl LEq_Nat_trans;
+<> ReturnAll;
+
+=============================
+
+Less relation
+
+=============================
+
+> Claim LS_Nat : Nat -> Nat -> Bool;
+> Intros n m;
+> Refine LEq_Nat (succ n) m;
+> ReturnAll;
+
+============================
+
+HProp versions
+
+============================
+
+> [HLEq_Nat [n, m : Nat] =  (bool_to_hprop (LEq_Nat n m))];
+> [HLS_Nat [n, m : Nat] =  (bool_to_hprop (LS_Nat n m))];
+

@@ -1,0 +1,21 @@
+TEST
+
+what was this? 
+
+> import Nat;
+
+
+> Inductive [Dbl : (a:El Nat)(b:El Nat)Type]
+>	Constructors
+>	[dbl:(a:El Nat)Dbl a a]
+>	[sgl:(a:El Nat)(b:El Nat)Dbl a b]
+>	[tri:(a:El Nat)(f:(x:El Nat)Dbl x a)Dbl a a];
+
+it works now! (apparently didn't before, may 18, 1999)
+
+> E_Dbl;
+
+Was trying to construct some difficult type? 
+
+
+

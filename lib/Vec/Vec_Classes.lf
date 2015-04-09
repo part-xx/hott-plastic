@@ -1,0 +1,98 @@
+> module Vec_Classes where;
+
+dictionary stuff.
+
+> import Vec;
+> import VecFns;
+
+<> import Vec_theorems;
+
+> import Eq;
+> import Ord;
+
+> import ML_Equality;
+> import Nat_theorems; 	-- maybe
+
+---
+
+lemma.
+
+would like to have this in scope of dict proof, but would need changes
+to metavar/intros mechanism - THE PROOF MODE NEEDS MORE WORK! 
+
+> Claim  vec_cmp_eq : (A:Type) D_Eq A -> (n:Nat) Vec A n -> Vec A n -> Bool;
+> Intros A d n as;
+> Refine ap_;
+> Refine E_Vec A ([n:Nat][_:Vec A n]Vec A n ==> Bool) ?base ?step ? as;
+> 2 Refine La_ ? ? is_vnil;
+> Intros m a as fn; 
+> Refine La_;
+> [phi = [Phi : (x:Nat)(Vec A x) -> (Eq Nat x (succ m))->Bool]
+>        [v:Vec A (succ m)]
+>        Phi ? v (Eq_refl ? (succ m))];
+> Refine phi;
+> Intros _ v H;
+> Refine E_Vec_NonEmpty A Bool m;
+> Refine Eq_subst ? ? ? ([z:Nat]Vec A z) H;
+> Refine v;
+> Refine [b:A][bs:Vec A m]And (eq A d a b) (ap_ ? ? fn bs);
+> ReturnAll;
+
+
+
+---
+JUST ASSUME FOR NOW.
+
+> Claim vec_cmp_eq_EqRel 
+>       : (A:Type)(d:D_Eq A) (n:Nat)
+>         Prf (c_EqRel (Vec A n) (BoolRel_to_Rel (Vec A n) (vec_cmp_eq A d n)));
+
+
+> Claim Vec_liftEq : (A:Type) (n:Nat) D_Eq A -> D_Eq (Vec A n);
+> Intros A n d;
+> Refine d_eq ? (vec_cmp_eq ? d n);
+> Refine vec_cmp_eq_EqRel;
+> ReturnAll;
+
+
+> Coercion 
+>	Parameters [A:Type][n:Nat] 
+>	 = Vec_liftEq A n : D_Eq A -> D_Eq (Vec A n);
+
+
+-----
+
+> Claim vec_cmp_leq : (A:Type) D_Ord A -> (n:Nat) Vec A n -> Vec A n -> Bool;
+> Intros A d n;
+> Refine ap2_;
+> Refine La_;
+> Refine E_Vec A ([n:Nat][_:Vec A n]Vec A n ==> Bool) ?base ?; 
+> base Refine La_ ? ? ([_:Vec A zero]true);		-- both nil
+> Intros m a as fn_as;
+> Refine La_;
+> Refine E_Vec_NonEmpty A Bool;
+> Intros b bs;
+> Refine if (eq A d a b) ? ?if_eq ?not_eq;
+> not_eq Refine leq A d a b;
+> if_eq Refine ap_ ? ? fn_as bs;
+> ReturnAll;
+
+---
+
+> Claim vec_cmp_leq_PreOrder
+>  : (A:Type)(d:D_Ord A) (n:Nat)
+>    Prf (c_PreOrder (Vec A n) (BoolRel_to_Rel (Vec A n) (vec_cmp_leq A d n)));
+
+
+> Claim Vec_liftOrd : (A:Type) (n:Nat) D_Ord A -> D_Ord (Vec A n);
+> Intros A n d; 
+> Refine d_ord ? (vec_cmp_leq ? d n);
+> 2 Refine Vec_liftEq A n d;
+> Refine vec_cmp_leq_PreOrder;
+> ReturnAll;
+
+
+> Coercion 
+>	Parameters [A:Type][n:Nat]
+>	 = Vec_liftOrd A n : D_Ord A -> D_Ord (Vec A n);
+

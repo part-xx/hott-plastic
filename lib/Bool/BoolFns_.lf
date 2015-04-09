@@ -1,0 +1,25 @@
+> module BoolFns_ where;
+
+> import TypeN;
+
+> import Bool;
+> import Unit;
+> import Empty;
+
+ Claim bool_to_hprop : Bool -> Type;
+ Intros b;
+ Refine T^0 (E_Bool ([x:Bool] Type^0));
+ Refine b;
+ Refine Empty_Type^0;
+ Refine Unit_Type^0;
+ ReturnAll;
+
+> Claim bool_to_hprop : Bool -> Type^0;
+> Intros b;
+> Refine (E_Bool ([x:Bool] Type^0));
+> Refine b;
+> Refine Empty_Type^0;
+> Refine Unit_Type^0;
+> ReturnAll;
+
+ 

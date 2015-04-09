@@ -1,0 +1,63 @@
+> module LogicalEq where;
+
+> import Function;
+
+ import ML_Equality;
+
+> [Eq : (A : Type) A -> A -> Prop];
+
+ [EqElim : (A : Type) (x, y : A) (p : Eq ? x y) Id_ ? x y];
+ [EqRfl : (A : Type) (x : A) (p : Eq ? x x) Eq ? (EqElim A x x p) (Idr A x)];
+
+> [Eqr : (A : Type) (a : A) Eq A a a];
+> [EqE_T : (A : Type) (T : (x:A)(y:A)(_:Eq ? x y)Type) (_:(x:A)T x x (Eqr ? x)) 
+>          (x:A)(y:A)(p:Eq ? x y) T x y p];
+> [EqE_P : (A : Type) (P : (x:A)(y:A)(_:Eq ? x y)Prop) (_:(x:A)P x x (Eqr ? x)) 
+>          (x:A)(y:A)(p:Eq ? x y) P x y p];
+
+> [PI : (P : Prop) (A : Type) (t : P -> A) (p , q : P) Eq ? (t p) (t q)];
+
+> [All_T : (A : Type) (A -> Prop) -> Prop];
+> [AllI_T : (A : Type) (P : A -> Prop) (_ : (x : A) P x) All_T A P];
+> [AllE_T : (A : Type) (P : A -> Prop) (a : A) All_T A P -> P a];
+
+> [All_P : (P : Prop) (P -> Prop) -> Prop];
+> [AllI_P : (P : Prop) (Q : P -> Prop) (_ : (x : P) Q x) All_P P Q];
+> [AllE_P : (P : Prop) (Q : P -> Prop) (a : P) All_P P Q -> Q a];
+
+> [Impl [P : Prop][Q : Prop] = All_P P ([_:P]Q)];
+> [ImplI [P : Prop][Q : Prop][i : (_:P)Q] = AllI_P P ([_:P]Q) i];
+> [ImplE [P : Prop][Q : Prop][i : Impl P Q][a : P] = AllE_P P ([_:P]Q) a i];
+
+> Claim implR : (P : Prop) Impl P P;
+> Intros P;
+> Refine (ImplI P P ([x:P]x));
+> ReturnAll;
+
+> Claim lbnzEq : (A : Type)(P : (x:A)Prop)(a,b : A)(p : Eq ? a b) (P a)->(P b);
+> Intros A P a b p pa;
+> [pa_imp_pb = (EqE_P A ([x,y:A][_:Eq ? x y]Impl (P x) (P y)) ([x:A]implR (P x)) a b p)];
+> Refine (ImplE (P a) (P b) pa_imp_pb pa);
+> ReturnAll;
+
+> Claim subst : (A : Type)(T : (x:A)Type)(a,b : A)(p : Eq ? a b) (T a)->(T b);
+> Intros A T a b p t;
+> Refine (ap_ ? ? (EqE_T A ([x,y:A][_:Eq ? x y](T x) ==> (T y)) ([x:A]Id (T x)) a b p) t);
+> ReturnAll;
+
+> Claim transEq : (A : Type)(a,b,c : A)(p : Eq ? a b)(q : Eq ? b c) Eq ? a c;
+> Intros A a b c p q;
+> Refine (lbnzEq A ([x:A]Eq ? a x) b c q p);
+> ReturnAll;
+
+ Claim commuteEq : (A : Type)(T : (x:A)Type)(a,b,c : A)(p : Eq ? a b)(q : Eq ? b c) 
+     Eq ? (La_ (T a) (T c) (tptEq A T a c (transEq A a b c p q))) 
+     (La_ (T a) (T c) ([t:T a] (tptEq A T b c q (tptEq A T a b p t))));
+ Intros A T a b c p q;
+ []
+
+ Claim lbnzEq : (A : Type)(P : (x:A)Prop)(a,b : A)(p : Eq ? a b) (P a)->(P b);
+ Intros A P a b p t;
+ Refine (ap_ ? ? (EqE_P A ([x,y:A][_:Eq ? x y](T x) ==> (T y)) ([x:A]Id (T x)) a b p) t);
+ ReturnAll;
+

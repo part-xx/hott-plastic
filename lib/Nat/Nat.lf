@@ -1,0 +1,9 @@
+
+> Inductive [Nat:Type] Constructors [zero:Nat] [succ:(n:Nat)Nat]
+
+should add this automatically...
+
+> [NatRec [T:Type] = E_Nat ([_:Nat]T)]
+
+And it should be synthetic!
+

@@ -1,0 +1,30 @@
+> module Nat_arith where;
+
+basic definitions; theorems elsewhere
+
+> import Nat;
+
+
+---
+usual definition of plus.
+
+> [plus = [x,y:Nat] E_Nat ([_:Nat]Nat) y ([_:Nat]succ) x ];
+
+
+---
+simple predecessor fn. 
+ - pred zero is zero. 
+ - NB this isn't the best thing to do. - eg use option type for return.
+
+> [pred = E_Nat ([_:Nat]Nat) zero ([n,_:Nat]n) : Nat -> Nat ];
+
+
+---
+simple subtraction 
+ - any negative result is mapped to zero
+
+> [minus = [m,n:Nat]E_Nat ([_:Nat]Nat) m ([_:Nat]pred) n 
+>        : Nat -> Nat -> Nat ];
+
+
+

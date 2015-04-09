@@ -1,0 +1,124 @@
+> module Sorting where;
+
+> import List;
+
+> import Nat_LEq_Bool;
+
+---------------
+
+TMP
+
+> Claim if : (A:Type) Bool -> A -> A -> A;
+> Intros _ b yes no; 
+> Refine E_Bool ([_:Bool]A) yes no b;
+> ReturnAll;
+
+> Claim leqb : (A:Type) D_Ord A -> A -> A -> Bool;
+> Intros A d;
+> Intros x y;
+> Refine E_D_Ord A ([_:D_Ord A]Bool) ? d;
+> Intros f;
+> Refine f x y; 
+> ReturnAll;
+
+-------------------
+
+> Claim insert : (A:Type)D_Ord A -> (a:A) List A -> List A;
+> Intros A d a l; 
+> Refine E_List A ([_:List A]List A) ? ? l;
+> 2 Refine cons;
+> 3 Refine a;
+> 2 Refine nil A;		-- useful to switch metavar order, ie "focus"? ?
+> Intros x xs r_xs; 
+
+> Refine if; 
+> 3 Refine (leqb ? ? x a);
+> 3 Immed;		-- solve the dict.
+
+> -- true
+> 2 Refine cons ? x r_xs;
+> -- false
+> Refine cons ? a (cons ? x xs);
+> ReturnAll;
+> insert;
+
+
+TEST
+
+> [ d = Ord_Nar];		-- earlier typo!
+
+> insert ? d three (nil ?) = cons ? three (nil ?);
+
+ALSO: question of solving metavars from context in such situations  
+      - eg, things like Ord_Nat, would be nice to have automatically.
+
+> [ l1 = cons ? two (cons ? four (nil ?))];
+> [ t1 = insert ? d three l1];
+> cons ? one (nil ?) = cons ? one (nil ?);
+> t1 = (cons ? two (cons ? three (cons ? four (nil ?))));
+> ehnf t1;
+
+
+
+----------------
+
+> Claim sort : (A:Type) D_Ord A -> List A -> List A;
+> Intros A d l;
+> Refine E_List ? ([_:List A]List A) ? ? l;
+> 2 Refine nil;
+> Intros x xs rs;
+> Refine insert ? ? x rs;
+> Immed;
+> ReturnAll;
+
+
+> import ListFns;
+
+> [ l2 = append ? t1 t1 ];
+> [ l3 = append ? l2 l2 ];
+> [ l4 = append ? l3 l3 ];
+
+> ehnf l4;
+
+> [t2 = sort ? d l4 ];
+> ehnf t2;
+
+> import Nat_arith;
+
+> Claim m_to_n : (m,n:Nat)List Nat;
+> Intros m n;
+> Refine if ? ?tst ?yes ?no;
+> tst Refine m .leq2 n;
+> no Refine nil;
+> [ delta =  (minus n m) .plus one ];
+> Refine E_Nat ([_:Nat]List Nat) ?zc ?sc delta; 
+> zc Refine nil;
+> Intros n_ xs;
+> Refine append ? xs (singleton ? (plus m n_));
+> ReturnAll;
+
+> [ o_t = m_to_n one ten ];
+> ehnf o_t;
+
+> Normal sum o_t;
+
+> Claim reverse : (A:Type) List A -> List A;
+> Intros A; 
+> Refine E_List ? ([_:List A]List A) ?nc ?cc; 
+> nc Refine nil;
+> Intros x xs rs;
+> Refine append ? rs (singleton ? x);
+> ReturnAll;
+
+> Normal reverse ? (m_to_n one three);
+
+> Normal sort Nat d (reverse ? $ m_to_n one twenty);
+
+NEED WAY TO NORMALISE
+
+ALSO - a way of forcing - just to test eval speeds
+
+OPTIONS to reduce nesting of terms - eg no-indent
+
+user syntax - for Nat...
+

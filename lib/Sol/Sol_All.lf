@@ -1,0 +1,11 @@
+> module Sol_All where;
+
+> import Sol_Basics;
+> import Sol_AndOr;
+
+<> import Sol_Misc
+
+<> import Sol_Relations
+
+<> import Sol_N_Ary_AndOr
+

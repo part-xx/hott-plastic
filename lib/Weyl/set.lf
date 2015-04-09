@@ -1,0 +1,3 @@
+> import weyl;
+
+> [seteq = [tau : U] [A,B : Set (T tau)] all tau [x : T tau] iff (in (T tau) x A) (in (T tau) x B)];

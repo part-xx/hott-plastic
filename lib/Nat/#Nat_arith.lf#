@@ -1,0 +1,38 @@
+> module Nat_arith where;
+
+basic definitions; theorems elsewhere
+
+> import Nat;
+
+
+---
+usual definition of plus.
+
+> [plus = [x,y:Nat] E_Nat ([_:Nat]Nat) y ([_:Nat]succ) x ];
+
+> [Eq : (A : Type) A -> A -> Prop];
+> [ref : (A : Type) (a : A) Prf (Eq A a a)];
+> [sub : (A : Type) (P : A -> Prop) (a,b:A) Eq A a b -> P a -> P b];
+
+> [Ind : (P : Nat -> Prop) P zero -> (n : Nat) (P n -> P (succ n)) -> (n : Nat) P n];
+
+> Claim plus_assoc : (m,n,p : Nat) Eq Nat (plus m (plus n p)) (plus (plus m n) p);
+> Intros m n;
+> Refine Ind;
+---
+simple predecessor fn. 
+ - pred zero is zero. 
+ - NB this isn't the best thing to do. - eg use option type for return.
+
+> [pred = E_Nat ([_:Nat]Nat) zero ([n,_:Nat]n) : Nat -> Nat ];
+
+
+---
+simple subtraction 
+ - any negative result is mapped to zero
+
+> [minus = [m,n:Nat]E_Nat ([_:Nat]Nat) m ([_:Nat]pred) n 
+>        : Nat -> Nat -> Nat ];
+
+
+

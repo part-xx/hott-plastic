@@ -1,0 +1,210 @@
+> module Sol_AndOr where;
+
+> import Sol_Basics;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+And
+
+> [ and = [p:Prop][q:Prop]{c:Prop}(p => (q => c)) => c : Prop -> Prop -> Prop ];
+
+
+> [ c_pair = [p:Prop][q:Prop] p => (q => and p q) ];
+
+
+> [ c_fst = [p:Prop][q:Prop] and p q => p ];
+> [ c_snd = [p:Prop][q:Prop] and p q => q ];
+
+
+* and_elim? - corresponds to Refine H & Intros p q
+	-- see test case.
+	-- it is equivalent to expansion of and...
+	-- using a proof of some (and A B)
+	-- NB would need meta-refine (App) on H, to saturate.
+
+<> Symbol /\ as and
+ * would have to change parser for this - class of infix symbols...
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Now, proofs of the above.
+
+> Claim p_pair : (p:Prop)(q:Prop)Prf(c_pair p q);
+> Intros p q;
+
+> Refine LL;
+> Intros pp;		-- needs comp
+
+> Refine LL;
+> Intros pq;
+
+> Refine LL;
+> Intros c;
+
+> Refine LL;
+> Intros H;
+
+
+TRY THESE FIRST
+
+> &F Refine App;			-- one
+> Refine App ? ([_:Prf q]c);
+
+** Refine App ? ? ? pq		-- three TRY AGAIN? 
+
+Lego can't do the first, but can do the second.
+Is there a weakness in my unification? (eg two needs "? pq" to work).
+
+Any of the following (sets) work. NB the later 2 give all info, so one step
+
+> Refine pq;
+> Refine App ? ([_:Prf p]q => c) ? pp;
+> Refine H;
+> ReturnAll;
+
+
+** Refine m_10 App ? ? (App ? ? H pp) pq 			-- OR
+** Refine m_10 App (Prf q) ? (App (Prf p) ? H pp) pq
+
+> p_pair;
+
+
+-------------------------------------------
+
+
+> Claim p_fst : (p:Prop)(q:Prop) Prf( c_fst p q);
+> Intros p q;
+
+> Refine LL;
+> Intros H;
+
+> [ p_q_p__p = App ? ? H p ];	-- replace C with p
+> p_q_p__p;
+
+describe what this does!
+
+> Refine App ? ? p_q_p__p ;
+
+Now, to prove p=>q=>p, ie derive Prf(p=>q=>p)
+
+> Refine LL;
+> Intros pp;
+> Refine LL;
+> Intros pq;
+> Refine pp;
+> ReturnAll;
+
+
+
+(*********************************)
+
+> Claim p_snd : (p:Prop)(q:Prop)Prf(c_snd p q) ;
+> Intros p q;
+
+> Refine LL;
+> Intros H;
+
+> Refine App ? ? (App ? ? H q);
+
+Now, to prove m_X, Prf(p => q => q)
+
+> Refine LL;
+> Intros pp;
+> Refine LL;
+> Intros pq;
+> Refine pq;
+> ReturnAll;
+
+> p_snd;
+
+> show p_snd;
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+> Claim f_pair : (p,q:Prop)(pp:Prf p)(pq:Prf q)Prf (and p q);
+> Intros p q;
+> Intros pp pq;
+> Refine imp_to_DP ? ? (imp_to_DP ? ? (p_pair p q) ? );
+> Refine pq;
+> Refine pp;
+> ReturnAll;
+
+HERE: want a functional form of pair. 
+
+ideally, we should only work in the Sol universe, where FA is the function
+constructor... 
+
+
+NB imp_to_DP = App, hence could work by meta-refine?
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Or
+
+> [or = [p:Prop][q:Prop]{c:Prop}(p => c) => ((q => c) => c)
+>     : Prop -> Prop -> Prop ];
+> [c_inl = [p:Prop][q:Prop]p => or p q 
+>        : Prop -> Prop -> Prop];
+> [c_inr = [p:Prop][q:Prop]q => or p q
+>        : Prop -> Prop -> Prop];
+
+or_elim works by expanding def - so omitted here.
+      or_elim = ... : {A,B,C|Prop}(A \/ B)->(A->C)->(B->C)->C
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+> Claim p_inl : (p:Prop)(q:Prop)Prf(c_inl p q);
+> Intros p q;
+
+> Refine LL;
+> Intros pp;
+
+Now, want fn which gives C from pp
+
+> Refine LL;
+> Intros c;		-- the proposition C
+
+> Refine LL;
+> Intros pc;
+> Refine LL;
+> Intros qc;
+
+> [c_from_p = App ? ? pc pp ];
+> Refine App ? ? pc pp;
+
+> ReturnAll;
+> p_inl;
+
+
+
+-------------------
+
+> Claim p_inr : (p, q:Prop)Prf(c_inr p q);
+> Intros p q;
+
+> Refine LL;
+> Intros pq;
+
+> Refine LL;
+> Intros c;
+
+> Refine LL;
+> Intros pc;
+> Refine LL;
+> Intros qc;
+
+> Refine App ? ? qc; 
+> Refine pq;
+> ReturnAll;
+
+> p_inr;
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+can have some and-or theorems here, ? 
+

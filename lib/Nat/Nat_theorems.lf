@@ -1,0 +1,45 @@
+> module Nat_theorems where;
+
+misc basic theorems
+
+> import Nat;
+> import Bool;
+
+> import ML_Equality;
+
+---
+Simple preds.
+
+NB should auto-gen...
+
+> Claim is_zero : Nat -> Bool;
+> Refine E_Nat ([_:Nat]Bool) true ([_:Nat][_:Bool]false);
+> ReturnAll;
+
+> Claim is_succ : Nat -> Bool;
+> Refine E_Nat ([_:Nat]Bool) false ([_:Nat][_:Bool]true);
+> ReturnAll;
+
+
+
+---
+injectivity
+
+copied from (auto) lego 
+
+should also auto-gen.
+
+defn  n_s_injective =
+  [ix0,iy0|n][s_hyp:Eq (s ix0) (s iy0)][P|SET][s_trick:(Eq ix0 iy0)->P]
+  s_trick (Eq_subst s_hyp
+            ([s_term:n]Eq ix0 (n_elim ([_:n]n) ix0 ([x1,_:n]x1) s_term))
+            (Eq_refl ix0))
+      n_s_injective :
+
+> Claim inj_succ 
+>    : (x,y:Nat) Id_ Nat (succ x) (succ y) -> (P:Type) (Id_ Nat x y -> P) -> P;
+> Intros _ _ H P foo;
+> Refine foo;
+> [p = ([n:Nat]Id_ Nat x (E_Nat ([_:Nat]Nat) x ([z,_:Nat]z) n))];
+> Refine Id_subst Nat (succ x) (succ y) p H Id_refl;
+> ReturnAll;

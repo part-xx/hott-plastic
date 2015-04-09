@@ -1,0 +1,7 @@
+> module Nat_TypeN where;
+
+> import TypeN;
+> import Nat;
+> AddToUniverse Type^ Nat;
+
+

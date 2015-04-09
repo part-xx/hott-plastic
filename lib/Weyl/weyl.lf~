@@ -1,0 +1,68 @@
+> [False : Prop];
+> [FalseE : (P : Prop) False -> P];
+
+> [Imp : Prop -> Prop -> Prop];
+> [ImpI : (P,Q : Prop) (P -> Q) -> Imp P Q];
+> [ImpE : (P,Q : Prop) Imp P Q -> P -> Q];
+
+> [Pearse : (P,Q : Prop) ((P -> Q) -> P) -> P];
+
+> [All : (A : Type) (A -> Prop) -> Prop];
+> [AllI : (A : Type) (P : A -> Prop) ((x : A) P x) -> All A P];
+> [AllE : (A : Type) (P : A -> Prop) (a : A) All A P -> P a];
+
+> [Eq : (A : Type) A -> A -> Prop];
+> [EqI : (A : Type) (a : A) Eq A a a];
+> [EqE : (A : Type) (P : A -> Prop) (a,b : A) Eq A a b -> P a -> P b];
+
+Natural Numbers
+
+> Inductive [Nat : Type] Constructors [zero : Nat] [succ : (n : Nat) Nat];
+> [Ind_Nat : (P : Nat -> Prop) (P zero) -> ((n : Nat) P n -> P (succ n)) -> (n : Nat) P n];
+
+Product Types
+
+> Inductive [A : Type][B : Type][Prod : Type] Constructors [pair : (a : El A) (b : El B) Prod];
+> [Ind_Prod : (A,B : Type) (P : Prod A B -> Prop) ((a : A) (b : B) P (pair A B a b)) -> (p : Prod A B) P p];
+
+Function Types
+
+> Inductive [A : Type][B : Type][Arr : Type] Constructors [lambda : (f : (a : El A) El B) Arr];
+> [Ind_Arr : (A,B : Type) (P : Arr A B -> Prop) ((f : A -> B) P (lambda A B f)) -> (f : Arr A B) P f];
+
+Universe of Small Types
+
+> [U : Type];
+> [T : U -> Type];
+> [nat : U];
+> [prod : U -> U -> U];
+
+> SimpleElimRule U T 0
+> [nat 0 = Nat : Type]
+> [prod 2 = [a : U] [b : U] Prod (T a) (T b)
+>         : (a : U) (b : U) Type];
+
+Universe of Small Propositions
+
+> [prop : Type];
+> [V : prop -> Prop];
+> [false : prop];
+> [imp : prop -> prop -> prop];
+> [all : (A : U) (T A -> prop) -> prop];
+> [eq : (A : U) T A -> T A -> prop];
+
+> SimpleElimRule prop V 0
+> [false 0 = False : Prop]
+> [imp 2 = [p : prop] [q : prop] Imp (V p) (V q)
+>        : (p : prop) (q : prop) Prop]
+> [all 2 = [A : U] [p : T A -> prop] All (T A) [x : T A] V (p x)
+>        : (A : U) (p : T A -> prop) Prop]
+> [eq 3 = [A : U] [a : T A] [b : T A] Eq (T A) a b
+>       : (A : U) (a : T A) (b : T A) Prop];
+
+Sets
+
+> Inductive [A : Type] [Set : Type] Constructors [set : (P : (x : El A) El prop) Set];
+> [in = [A : Type] [a : A]
+>       E_Set A ([_ : Set A] prop) ([P : A -> prop] P a)];
+> Normal (T nat);

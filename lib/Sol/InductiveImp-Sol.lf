@@ -1,0 +1,135 @@
+> module Sol where;
+
+%---------------------------------------
+here: thinking about using IndTy mechanism to 
+express simple implication.
+
+it doesn't look like a successful experiment.
+%---------------------------------------
+
+
+<> Symbol -> is DP
+
+%-------------------------------------------------------------------------------
+FA: (Type?) Constructor for Prop.
+
+> [Prop : Type];
+> [Prf : Prop -> Type];
+
+> [FA : (A : Type)
+>       (_ : El A -> El Prop)
+>       El Prop
+>       ];
+
+> [LL : (A:Type)
+>		(P:El A -> El Prop)
+>		((x:El A)Prf(P(x)))->
+>		Prf(FA A P)
+>		];
+
+> [Imp : El Prop -> El Prop -> El Prop];
+> [LL_ : (P1,P2:El Prop) ((p1:Prf P1) Prf P2) -> Prf(Imp P1 P2)];
+
+----------------------------
+
+OK - would have to do it as mutually inductive
+   - so, expense of extra arguments in the Elims (and 2 elims!) against
+     cost of the definition expansion...
+
+PROBABLY NOT WORTH IT! 
+
+> [E_FA :	(A:Type)
+>			(P:El(A) -> Prop)
+>			(C_FA:Prf(FA A P) -> Prop) 
+>			(	(g:(x:El(A))Prf(P(x)))
+>				Prf(C_FA(LL A P g)) ) -> 
+>			(z:Prf(FA A P))
+>			Prf(C_FA(z))
+>			]
+
+Since E_FA is non-standard, have to supply our own comp rules.
+
+NB does the conjecture about redundancy of matching (eg in args A,B below)
+   as opposed to non-linear pattern matching apply here? I ASSUME it does.
+
+> SimpleElimRule E_FA 5
+>    [ LL 3 
+>         = [A:Type]
+>           [P:A -> Prop]
+>           [C_FA:Prf(FA A P) -> Prop]
+>           [f:(g:(x:A)Prf(P(x)))Prf(C_FA(LL A P g))]
+>           [B:Type]
+>           [Q:B->Prop]
+>           [g:(x:A)Prf(P(x))]
+>           f(g) 
+>         : (A:Type)
+>           (P:A -> Prop)
+>           (C_FA:Prf(FA A P) -> Prop) 
+>           (f:(g:(x:A)Prf(P(x)))Prf(C_FA(LL A P g)))
+>           (B:Type)
+>           (Q:B->Prop)
+>           (g:(x:A)Prf(P(x)))
+>           Prf(C_FA(LL A P g)) ]
+
+ORIGINAL
+<> ElimRule E_FA 
+<>   [E_FA A P R f (LL A P g) = f(g) : Prf(R(LL A P g))]
+(Requires some work before we can translate this.)
+
+
+
+
+
+%-------------------------------------------------------------------------------
+Specialised Elim operator, FA P, a => P(a)
+
+Kind: (A:Type)(P:(A)Prop)(Prf(FA(A,P)))(a:A)Prf(P(a))
+
+<> [ App A P F a = 
+<>        E_FA     A
+<>                P
+<>                ([G:Prf(FA A P)]P(a))
+<>                ([g:(x:A)Prf(P(x))]g(a))
+<>                F
+<>    ]
+
+> [ App =                -- explicit version
+>        [A:Type]
+>        [P:A->Prop]
+>        [F:Prf(FA A P)]
+>        [a:A]
+>        E_FA 
+>            A
+>            P
+>            ([G:Prf(FA A P)]P(a))
+>            ([g:(x:A)Prf(P(x))]g(a))
+>            F
+>    ]
+
+
+would like to abbreviate App(A,P,F,a) to App(F,a) - need metavars
+
+<> Abbreviate App(_,_,F,a) as App(F,a)
+OR
+<> Abbreviate App as App' ? ?
+
+ie, simple form of arg synthesis. 
+
+
+
+%-------------------------------------------------------------------------------
+Implication
+	- non-dependent FA...
+	- this is the arrow that used in the rest of this file.
+
+> [Imp [P1, P2:Prop] = FA (Prf P1) ([x:Prf(P1)]P2) ]
+
+<> Symbol => as Imp
+
+
+---
+Want the following principle: {P,Q:Prp}(Prf (Imp P Q))->(Prf P)->Prf Q
+This corresponds to App...
+
+> [imp_to_DP = App]
+

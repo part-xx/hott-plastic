@@ -1,0 +1,103 @@
+> module logic where;
+
+> [False : Prop];
+> [FalseE : (P : Prop) False -> P];
+
+> [Imp : Prop -> Prop -> Prop];
+> [ImpI : (P : Prop) (Q : Prop) (P -> Q) -> Imp P Q];
+> [ImpE : (P : Prop) (Q : Prop) Imp P Q -> P -> Q];
+
+> [Pearse : (P : Prop) (Q : Prop) ((P -> Q) -> P) -> P];
+
+Defined Connectives
+
+> [Not = [P : Prop] Imp P False];
+> [Or = [P,Q : Prop] Imp (Not P) Q];
+> [And = [P,Q : Prop] Not (Or (Not P) (Not Q))];
+> [Iff = [P,Q : Prop] And (Imp P Q) (Imp Q P)];
+
+> [All : (A : Type) (A -> Prop) -> Prop];
+> [AllI : (A : Type) (P : A -> Prop) ((x : A) P x) -> All A P];
+> [AllE : (A : Type) (P : A -> Prop) (a : A) All A P -> P a];
+
+> [Eq : (A : Type) A -> A -> Prop];
+> [EqI : (A : Type) (a : A) Eq A a a];
+> [EqE : (A : Type) (P : A -> Prop) (a : A) (b : A) Eq A a b -> P a -> P b];
+
+The Universe of Small Types
+
+> [U : Type];
+> [T : U -> Type];
+
+> [N : U];
+> [O : T N];
+> [s : T N -> T N];
+> [EN : (C : T N -> U) T (C O) -> ((n : T N) T (C n) -> T (C (s n))) ->
+>     (n : T N) T (C n)];
+
+> SimpleElimRule N EN 3
+>  [O 0 = [C : T N -> U] [a : T (C O)] [b : (n : T N) T (C n) -> T (C (s n))]
+>   a
+>       : (C : T N -> U) T (C O) -> ((n : T N) T (C n) -> T (C (s n))) ->
+>         T (C O)]
+>  [s 1 = [C : T N -> U] [a : T (C O)] [b : (n : T N) T (C n) -> T (C (s n))]
+>         [n : T N] [x : T (C n)] b n x
+>        : (C : T N -> U) T (C O) -> ((n : T N) T (C n) -> T (C (s n))) ->
+>          (n : T N) T (C n) -> T (C (s n))];
+
+ [prod : U -> U -> U];
+ [pair : (A : U) (B : U) T A -> T B -> T (prod A B)];
+ [prodE : (A : U) (B : U) (C : T (prod A B) -> U)
+   ((a : T A) (b : T B) T (C (pair A B a b))) -> (z : T (prod A B)) T (C z)];
+
+ SimpleElimRule prod prodE 4
+ [pair 4 = [A : U] [B : U] [C : T (prod A B) -> U]
+           [f : (a:T A) (b:T B) T (C (pair A B a b))]
+           [A' : U] [B' : U] [a : T A] [b : T B]
+           f a b
+         : (A : U) (B : U) (C : T (prod A B) -> U)
+           ((a : T A) (b : T B) T (C (pair A B a b))) ->
+            (A', B' : U)(a : T A) (b : T B) T (C (pair A B a b))];
+
+ [pi1 = [A,B:U] prodE A B ([_:T(prod A B)] A) [a:T A] [b : T B] a];
+ [pi2 = [A,B:U] prodE A B ([_:T(prod A B)] B) [a:T A] [b : T B] b];
+
+The Universe of Small Propositions
+
+> [prop : Type];
+> [V : prop -> Prop];
+
+> [false : prop];
+> [imp : prop -> prop -> prop];
+> [all : (A : U) (T A -> prop) -> prop];
+> [eq : (A : U) T A -> T A -> prop];
+
+ SimpleElimRule prop V 0
+ [false 0 = False : Prop]
+ [imp 2 = [p,q : prop] Imp (V p) (V q)
+         : prop -> prop -> Prop]
+ [all 2 = [A : U] [P : T A -> prop] All (T A) [x : T A] V (P x)
+          : (A : U) (T A -> prop) -> Prop]
+ [eq 3 = [A : U] [a,b : T A] Eq (T A) a b
+       : (A : U) T A -> T A -> Prop];
+
+> [not = [P : prop] imp P false];
+> [or = [P,Q : prop] imp (not P) Q];
+> [and = [P,Q : prop] not (or (not P) (not Q))];
+> [iff = [P,Q : prop] and (imp P Q) (imp Q P)];
+
+> [Set : Type -> Type];
+> [set : (A : Type) (A -> prop) -> Set A];
+> [in : (A : Type) A -> Set A -> prop];
+
+ SimpleElimRule Set in 2
+ [set 1 = [A : Type] [a : A] [P : A -> prop] P a
+        : (A : Type) A -> (A -> prop) -> prop];
+
+> [arr : Type -> Type -> Type];
+> [lam : (A,B : Type) (A -> B) -> arr A B];
+> [app : (A,B : Type) A -> arr A B -> B];
+
+ SimpleElimRule arr app 3
+ [lam 1 = [A,B : Type] [a : A] [b : A -> B] b a
+        : (A,B : Type) A -> (A -> B) -> B];

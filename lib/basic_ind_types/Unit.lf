@@ -1,0 +1,6 @@
+> import TypeN;
+
+> Inductive [Unit:Type]
+>   Constructors [unit:Unit]
+
+> AddToUniverse Type^ Unit;

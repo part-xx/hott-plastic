@@ -1,0 +1,12 @@
+> module Psi where
+
+
+> Inductive [A:Type][P:(a:El A)Type][p:(a:El A)El (P a)][Psi:Type] 
+>    Constructors
+>    [mkPsi : (a:El A)Psi];
+
+> [psi1 [A:Type][P:A->Type][p:(a:A)P a]
+>    = E_Psi A P p ([_:Psi A P p]A) ([a:A]a)];
+> [psi2 [A:Type][P:A->Type][p:(a:A)P a][s:Psi A P p]
+>    = p (psi1 ? ? ? s) ];
+

@@ -1,0 +1,21 @@
+> module Vec where;
+
+> import Nat;
+
+> Inductive 
+>	[A:Type]
+>	[Vec:(n:El Nat)Type]
+>   Constructors
+>   [vnil:Vec(zero)]
+>   [vcons:(m:El Nat)(x:El A)(l:Vec(m))Vec(succ(m))];
+
+> Claim VecFill : (A:Type)(a:A)(n:Nat)(Vec A n);
+> Intros A a;
+> Refine E_Nat [n:Nat](Vec A n);
+> Intros n ih;
+> Refine vcons ? ? a ih;
+> ReturnAll;
+> Refine vnil;
+> ReturnAll;
+
+

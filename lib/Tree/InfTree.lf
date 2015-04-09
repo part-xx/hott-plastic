@@ -1,0 +1,7 @@
+> module InfTree where
+
+> Inductive 
+>	[A:Type][InfTree:Type]
+>   Constructors 
+>	[ileaf:InfTree]
+>	[ibranch:(x:El A)(bf:(n:El Nat)InfTree)InfTree]

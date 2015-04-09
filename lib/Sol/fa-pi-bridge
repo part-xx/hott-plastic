@@ -1,0 +1,11 @@
+
+> import Pi;		-- remove? 
+
+
+Do we have an equivalent in Pi? 
+Yes - need one for calculating with and/pair? 
+
+> [imp_to_Pi : (p:Prop)(q:Prop)Prf(Imp p q) -> Pi_ (Prf p) (Prf q) ]
+
+
+%-------------------------------------------------------------------------------

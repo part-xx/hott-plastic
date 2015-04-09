@@ -1,0 +1,23 @@
+
+> import Maybe;
+
+> Claim eta : (A:Type)(a:A)Maybe A;
+> Refine Just;
+
+> Claim bind : (A:Type)(B:Type)Maybe A -> (A -> Maybe B) -> Maybe B;
+> Intros _ _ ma f;
+> Refine E_Maybe ? ([_:Maybe A]Maybe B) (Nothing B) ? ma;
+> Refine f;
+> ReturnAll;
+
+
+-- convenience fn
+
+> Claim lift : (A:Type)(B:Type) (A -> B) -> Maybe A -> Maybe B;
+> Intros _ _ f ma; 
+> -- Refine bind ? ? ma ([a:A]eta ? (f a)); -- complains (Var ?) in shift
+> Refine bind ? ? ma ([a:A]eta B (f a));
+> ReturnAll;
+
+
+

@@ -1,0 +1,7 @@
+> module LogicalEq where;
+
+> [Eq : (A : Type) A -> A -> Prop];
+> [Eqr : (A : Type) (a : A) Eq A a a];
+> [EqE_T : (A : Type) (T : (x:A)Type) (a : A) (b : A) (Eq ? a b) -> T a -> T b];
+> [EqE_P : (A : Type) (P : (x:A)(y:A)(_:Eq ? x y)Prop) (_:(x:A)P x x (Eqr ? x)) 
+>          (x:A)(y:A)(p:Eq ? x y) P x y p];

@@ -1,0 +1,44 @@
+> module List_theorems where;
+
+for meta-proofs 
+
+> import List;
+> import ML_Equality; 
+
+following pattern from lego 'Theorems' facility.
+
+
+> Claim inj_cons : (A:Type)(a,b:A)(as,bs:List A)
+>                  Eq ? (cons ? a as) (cons ? b bs) 
+>                  -> (P:Type)(Eq ? a b -> Eq ? as bs -> P) -> P;
+
+> Intros _ _ _ _ _ H P foo;
+> Refine foo;
+
+as/bs case
+
+> [p = [l:List A]
+>      Eq (List A) as
+>          (E_List A ([_:List A]List A) as ([_:A][x1:List A][_:List A]x1) l)];
+
+> Refine Eq_subst ? ? ? p H;
+> Refine Eq_refl;
+
+a/b case.
+
+> [q = [l:List A]
+>      Eq A a 
+>          (E_List A ([_:List A]A) a ([x1:A][_:List A][_:A]x1) l)];
+
+> Refine Eq_subst ? ? ? q H;
+> Refine Eq_refl;
+> ReturnAll;
+
+
+---
+
+> Claim inj_nil : (A:Type) Eq (List A) (nil A) (nil A) -> (P:Type)P -> P; 
+> Intros _ H P p;
+> Refine p;
+> ReturnAll;
+

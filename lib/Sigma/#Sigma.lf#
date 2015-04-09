@@ -1,0 +1,34 @@
+> module Sigma where;
+
+> Inductive 
+>	[A : Type]
+>	[B : (_:El A) Type]
+>	[Sigma : Type]
+>   Constructors 
+>	[sigma:(x:El A)(y:El (B x))Sigma];
+
+
+-----------------------------------------------------------------
+`pr' - a synonym for sigma constr.
+
+> [pr = sigma];
+
+-----------------------
+
+> [pi1 = [A:Type][B:(_:A)Type]E_Sigma A B ([_:Sigma A B]A) ([x:A][y:B x]x)
+>      : (A:Type)(B:(_:A)Type)(_:Sigma A B) A ];
+
+> Claim pi2 : (A:Type)(B:(_:A)Type)(s:Sigma A B) B (pi1 A B s);
+> Intros A B s; 
+> Refine E_Sigma ? ? ([s:Sigma A B]B (pi1 A B s));
+> Intros x y; 
+> Refine y;
+> ReturnAll;
+
+> [True : Prop];
+> [trueI : True];
+
+> Claim true : True;
+> Refine trueI;
+
+

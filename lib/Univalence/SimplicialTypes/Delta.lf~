@@ -1,0 +1,53 @@
+> module Delta where;
+
+> import TypeN;
+
+> import Abbrev;
+
+> import Nat;
+> import Nat_TypeN;
+> import Nat_Ord;
+> import Nat_arith;
+> import Sigma;
+> import Function;
+> import FunctionN;
+
+> [Stn [i : Nat] = Sigma ? ([n:Nat]T^0 (HLEq_Nat n i))];
+> [Stn_0 [i : Nat] = Sigma_Type^0 (Nat_Type^0) ([n:Nat]HLEq_Nat n i)];
+
+> [StnLS [i : Nat][n, m : Stn i] = (HLS_Nat (pi1 ? ? n) (pi1 ? ? m))];
+> [LStoLS [i, j : Nat][f : Stn i ==> Stn j] = [n,m:Stn i] T^0 (StnLS i n m) ==> T^0 (StnLS j (ap_ ? ? f n) (ap_ ? ? f m))];
+> [LStoLS_0 [i, j : Nat][f : Stn i ==> Stn j] = [n,m:Stn i] Pi__0 (StnLS i n m) (StnLS j (ap_ ? ? f n) (ap_ ? ? f m))];
+
+> [is_incr [i, j : Nat][f : Stn i ==> Stn j] = twoArgPi (Stn i) ([n,m :Stn i]LStoLS i j f n m)];
+> [is_incr_0 [i, j : Nat][f : Stn i ==> Stn j] = twoArgPi_0 (Stn_0 i) ([n,m:Stn i]LStoLS_0 i j f n m)];
+
+> [is_incr_comp [i,j,k:Nat][f:Stn i ==> Stn j][g:Stn j ==> Stn k][inc_f:is_incr i j f][inc_g:is_incr j k g] = 
+>                      [fg = comp (Stn i) (Stn j) (Stn k) f g]
+>                      La2 (Stn i) (Stn i) (LStoLS i k fg) 
+>                      ([n,m:Stn i]comp (T^0 (StnLS i n m)) (T^0 (StnLS j (ap_ (Stn i) (Stn j) f n) (ap_ (Stn i) (Stn j) f m)))
+>                                        (T^0 (StnLS k (ap_ (Stn i) (Stn k) fg n) (ap_ (Stn i) (Stn k) fg m)))
+>                                  (twoAp (Stn i) (LStoLS i j f) inc_f n m) 
+>                                  (twoAp (Stn j) (LStoLS j k g) inc_g (ap_ (Stn i) (Stn j) f n) (ap_ (Stn i) (Stn j) f m)))];
+
+> [Delta [i, j : Nat] = Sigma ? ([f : (Stn i) ==> (Stn j)]is_incr i j f)];
+ AddToUniverse Type^0 [delta__ = Nat];
+> [Delta_0 [i, j : Nat] = Sigma_Type^0 (Pi__0 (Stn_0 i) (Stn_0 j)) ([f : (Stn i) ==> (Stn j)]is_incr_0 i j f)];
+
+
+> [fm_comp [i, j, k : Nat] = [f_ : El(Delta i j)][g_ : El(Delta j k)]
+>	sigma ? ([h:Stn i==> Stn k](is_incr i k h)) (comp ? ? ? (pi1 ? ? f_) (pi1 ? ? g_)) 
+>               (is_incr_comp i j k (pi1 ? ? f_) (pi1 ? ? g_) (pi2 ? ? f_) (pi2 ? ? g_))];
+
+Associativity test
+
+ [i, j, k, l : Nat];
+
+ [f : El(Delta i j)];
+ [g : El(Delta j k)];
+ [h : El(Delta k l)];
+
+ [T : El(Delta i l) -> Type];
+ [t : T (fm_comp i k l (fm_comp i j k f g) h) -> Nat];
+ [a : T (fm_comp i j l f (fm_comp j k l g h))];
+ t a;

@@ -1,0 +1,37 @@
+> import Nat;
+> import Pi;
+ import Fol;
+> import LogicalEq;
+> import TypeN;
+
+> [Pi2 = [A1 : Type][A2 : Type][B : A1->A2->Type]Pi ? ([x1:A1]Pi ? ([x2:A2]B x1 x2))];
+> [Pi3 = [A1 : Type][A2 : Type][A3 : Type][B : A1->A2->A3->Type]Pi ? ([x1:A1]Pi2 ? ? ([x2:A2][x3:A3]B x1 x2 x3))];
+> [Pi4 = [A1 : Type][A2 : Type][A3 : Type][A4 : Type][B : A1->A2->A3->A4->Type]Pi ? ([x1:A1]Pi3 ? ? ? ([x2:A2][x3:A3][x4:A4]B x1 x2 x3 x4))];
+
+> [ap2 = [A1 : Type][A2 : Type][B : A1->A2->Type][f : Pi2 A1 A2 B][x1 : A1][x2 : A2]ap ? ? (ap ? ? f x1) x2];
+
+> [ap3 = [A1 : Type][A2 : Type][A3 : Type][B : A1->A2->A3->Type][f : Pi3 A1 A2 A3 B][x1 : A1][x2 : A2][x3 : A3]
+>        ap2 ? ? ? (ap ? ? f x1) x2 x3];
+
+> [twoArgPi [A : Type][B : (i, j : A)Type] = Pi A ([i:A]Pi A ([j:A] B i j))];
+> [twoArgPi_0 [A : Type^0][B : (i, j : T^0 A) Type^0] = Pi_Type^0 A ([i:T^0 A]Pi_Type^0 A ([j:T^0 A]B i j))];
+> [twoNatPi = twoArgPi Nat];
+> [threeNatPi [A : (i, j, k : Nat)Type] = Pi Nat ([i:Nat]Pi Nat ([j:Nat]Pi Nat ([k:Nat] A i j k)))];
+
+> [La2 [A1 : Type][A2 : Type][B : A1->A2->Type] = [f : (i:A1)(j:A2)B i j]
+>                 La ? ([i:A1]Pi ? ([j:A2]B i j)) ([i:A1]La ? ([j:A2]B i j) ([j:A2]f i j))];
+> [La3 [A1 : Type][A2 : Type][A3 : Type][B : A1->A2->A3->Type] = [f : (i:A1)(j:A2)(k:A3)B i j k]
+>                             La A1 ([i:A1]Pi2 A2 A3 (B i)) ([i:A1]La2 A2 A3 (B i) (f i))];
+> [twoAp [A : Type][B : (i, j : A)Type] = [f:twoArgPi A B][x:A][y:A][fx = ap A ([i:A]Pi A ([j:A]B i j)) f x]ap A ([j:A]B x j) fx y];
+> [twoNatAp = twoAp Nat];
+
+> [AllNat2 [A : (i, j : Nat)Prop] = All_T ? ([i:Nat]All_T ? ([j:Nat] A i j))];
+> [AllNat2E [A : (i, j : Nat)Prop][p : AllNat2 A][i, j : Nat] = AllE_T ? ([j_:Nat]A i j_) j (AllE_T ? ([i_:Nat]All_T ? (A i_)) i p)];
+
+> [AllNat3 [A : (i, j, k : Nat)Prop] = All_T ? ([i:Nat]All_T ? ([j:Nat] All_T ? ([k:Nat] A i j k)))];
+> [AllNat3E [A : (i, j, k : Nat)Prop][p:AllNat3 A][i,j,k:Nat] = AllNat2E (A i) (AllE_T ? ([i_:Nat]AllNat2 (A i_)) i p) j k];
+
+AllE ? ? k (AllE ? ? j (AllE ? ? i p))];
+
+ [twoSigma [A : Type][B : (_:A)Type][C : (x:A)(_:B x)Type]]
+

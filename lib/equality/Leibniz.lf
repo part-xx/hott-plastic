@@ -1,0 +1,128 @@
+> module Leibniz where;
+
+Leibniz equality
+
+> import Sol;
+> import Sol_Basics;
+> import Pi;
+> import Sol_Relations;
+> import MetaEq;
+
+need Sol and Pi to define leibniz eq.
+
+good test: demonstrate proof of eta for Pi wrt Leibniz? 
+
+---
+
+> Claim Eq : (T:Type)(x,y:T)Prop;
+> Intros T x y;
+> Refine FA;
+> 2 Refine Pi_ T Prop;
+> Intros P;
+> Refine Imp;
+> Refine ap_ ? ? P y;
+> Refine ap_ ? ? P x;
+> ReturnAll;
+> Eq;
+
+Is this ok?
+
+-----------------------
+
+NB this is a very direct proof - since it is just defn expansion
+
+> Claim Eq_subst : (T:Type)(m,n:T) Prf( c_Eq_subst T (Eq T) m n );
+> Intros T m n;
+> Refine PropId (Eq T m n);
+> ReturnAll;
+> Eq_subst;
+
+> Claim Eq_resp : (A,B:Type)(f:A->B)(x,y:A)Prf(Eq ? x y) -> Prf(Eq ? (f x) (f y));
+> Intros _ _ _ _ _ H;
+> Intros {LL} P;
+> Refine App ? ? H (La_ ? ? [x:?]ap_ ? ? P (f x));
+> ReturnAll;
+
+-----------
+
+> Claim Eq_refl : (T:Type) Prf (c_Refl T $ Eq T);
+> Intros T;
+> Refine LL;
+> Intros x;
+> Refine LL;
+> Intros P;
+> [ px = ap_ ? ? P x ];
+> Refine PropId px;
+> ReturnAll;
+
+
+> Claim Eq_sym : (T:Type) Prf (c_Sym T $ Eq T);
+> Intros T;
+> Refine LL;
+> Intros x;
+> Refine LL;
+> Intros y;
+> Refine LL;
+> Intros eq_xy;
+
+> [ eqs = (App ? ? (Eq_subst T x y) eq_xy) ];
+> [ pred = La_ ? ? ([z:T]Eq T z x)]; 
+
+> Claim pred_x : Prf (ap_ ? ? pred x) ;
+> Cut [pred_x = App T ([x:El T]Eq T x x) (Eq_refl T) x];
+
+<> App ? ? (App ? ? eqs pred) (App ? ? (Eq_refl T) x)
+another weakness in conv? - might crash.
+
+> [ foo = App ? ? (App ? ? eqs pred) pred_x ];
+> Refine foo;
+> ReturnAll;
+> Eq_sym;
+
+TESTS
+
+> [A:Type][x,y:A][h:Prf(Eq A x y)];
+> Normal App ? ? (App ? ? (App ? ? (Eq_sym A) x) y) h;
+> Forget A;
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Easy proof - from trans of Imp.
+In fact, use that proof here? 
+
+> Claim Eq_trans : (T:Type) Prf (c_Trans T $ Eq T);
+> Intros T;
+> Refine LL;
+> Intros x;
+> Refine LL;
+> Intros y;
+> Refine LL;
+> Intros z;
+> Refine LL;
+> Intros eq_xy;
+> Refine LL;
+> Intros eq_yz;
+> Refine LL;
+> Intros P;
+> Refine LL;
+> Intros px;
+> Refine App ? ? (App ? ? eq_yz P) ?;
+> Refine App ? ? (App ? ? eq_xy P) ?;
+> Immed;
+> ReturnAll;
+> Eq_trans;
+
+
+
+
+> Claim Eq_EqRel : (T:Type)Prf (c_EqRel T $ Eq T);
+> Intros T;
+> Refine f_pair;
+> Refine f_pair;
+> Immed;
+> ReturnAll;
+
+
+
+

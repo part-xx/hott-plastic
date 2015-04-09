@@ -1,0 +1,34 @@
+> module Fundamentals where;
+
+For VERY general, pure LF stuff.
+
+---
+
+> [id [A:Type] = [x:A]x ];
+
+
+Cut? ie, name for DP applic? 
+
+---
+
+> Claim contra_dp 
+>   : (A :Type) (B : A -> Type)
+>	  (A':Type) (B': A' -> Type)
+>         (fA:A' -> A) ((x:A')B (fA x) -> B' x) -> ((x:A)B x) -> ((x:A')B' x);
+> Intros _ _ _ _ fA fB f x;
+> Refine fB x (f (fA x));
+> ReturnAll;
+
+
+Following, for easier unification...
+
+> Claim contra_dp_
+>	: (A,B,A',B':Type) (A' -> A) -> (B -> B') -> (A -> B) -> (A' -> B');
+> Intros _ _ _ _ fA fB f x ; 
+> Refine x .fA .f .fB; 
+> ReturnAll;
+
+
+---
+
+flip args ? no - not that useful.

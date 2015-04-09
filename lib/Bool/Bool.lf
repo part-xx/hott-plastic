@@ -1,0 +1,8 @@
+> module Bool where;
+
+> Inductive [Bool: Type] 
+>	Theorems 
+>	Constructors 
+>		[true: Bool]
+>		[false:Bool];		
+

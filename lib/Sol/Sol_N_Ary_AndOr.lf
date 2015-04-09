@@ -1,0 +1,143 @@
+> module Sol_N_Ary_AndOr where;
+
+> import Sol;
+
+%-------------------------------------------------------------------------------
+And3
+
+NB as Ind Type? 
+
+<> Inductive [and3: (A:Prop)(B:Prop)(C:Prop)Type ]
+<>	Constructors  
+BUT WE NEED A PROP RESULT
+
+=> what is the effect of universes here? 
+
+also, can have an underlying 3-tuple and give it NAMES in Prop.
+
+- want an add-to-universe operation.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Q: is it possible (or sensible?) to have implication at DP level? 
+	might have problems, eg of kind inside a FO body...
+
+> [ and3 = [A,B,C:Prop]{X:Prop}(A => B => C => X) => X
+>        : Prop -> Prop -> Prop -> Prop ];
+
+> [ c_pair3 = [A,B,C:Prop]A => B => C => and3 A B C ];
+> [ c_and3_out1 = [A,B,C:Prop] and3 A B C => A ];
+> [ c_and3_out2 = [A,B,C:Prop] and3 A B C => B ];
+> [ c_and3_out3 = [A,B,C:Prop] and3 A B C => C ];
+
+
+%-------------------------------------------------------------------------------
+now the proofs of these.
+
+> Claim p_pair3 : (A,B,C:Prop)Prf(c_pair3 A B C) ;
+> Intros A B C;
+
+> Refine LL;
+> Intros pA;
+> Refine LL; 
+> Intros pB;
+> Refine LL;
+> Intros pC;
+
+> Refine LL;
+> Intros X;
+
+> Refine LL;
+> Intros pH;
+
+> Refine App ? ? (App ? ? (App ? ? pH ?) ?) ?;
+	WOULD LIKE a META (Prop/Pi) REFINE! 
+	COMPARE TO SIGMA pattern! 
+
+> Immed; 
+> ReturnAll;
+
+	- should Immed try a ReturnAll - cf auto QED? 
+
+
+%-------------------------------------------------------------------------------
+
+> Claim p_and3_out1 : (A,B,C:Prop)Prf(c_and3_out1 A B C) ;
+> Intros A B C;
+> Refine LL;
+> Intros H;
+
+> Refine App ? ? (App ? ? H A); 
+
+> Refine LL;
+> Intros pA;
+> Refine LL;
+> Intros pB;
+> Refine LL;
+> Intros pC;
+> Immed;
+> ReturnAll;
+
+%---------------------------------------
+
+> Claim p_and3_out2 : (A,B,C:Prop)Prf(c_and3_out2 A B C) ;
+> Intros A B C;
+> Refine LL;
+> Intros H;
+
+> Refine App ? ? (App ? ? H B); 
+
+> Refine LL;
+> Intros pA;
+> Refine LL;
+> Intros pB;
+> Refine LL;
+> Intros pC;
+> Immed;
+> ReturnAll;
+
+%---------------------------------------
+
+> Claim p_and3_out3 : (A,B,C:Prop)Prf(c_and3_out3 A B C) ;
+> Intros A B C;
+> Refine LL;
+> Intros H;
+
+> Refine App ? ? (App ? ? H C); 
+
+> Refine LL;
+> Intros pA;
+> Refine LL;
+> Intros pB;
+> Refine LL;
+> Intros pC;
+> Immed;
+> ReturnAll;
+
+Q: is there any way to reuse the proof here, ie as tactic? 
+
+-------------------
+Tests
+
+> [A,B,C:Prop];
+> [pA:Prf A][pB:Prf B][pC:Prf C];
+> Claim h : Prf (and3 A B C);
+> p_pair3 A B C;
+> Refine App ? ? (App ? ? (App ? ? (p_pair3 A B C) ?) ?);
+		NB A,B,C types are required. - should check why...
+
+> Immed;
+> h;
+
+DISCHARGE WOULD BE NICE HERE!
+
+> Claim h2 : (A,B,C:Prop)(pA:Prf A)(pB:Prf B)(pC:Prf C)Prf (and3 A B C);
+> Intros A B C pA pB pC;
+> Refine App ? ? (App ? ? (App ? ? (p_pair3 A1 B1 C1) ?) ?);
+> Immed;
+> ReturnAll;
+> h2;
+
+> Forget A;
+

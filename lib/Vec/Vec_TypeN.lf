@@ -1,0 +1,13 @@
+> module Vec_TypeN where;
+
+Provide the universe version of vectors.
+
+> import TypeN;
+> import Vec;
+
+> AddToUniverse Type^ Vec ;
+
+Convenience abbreviations.
+
+> [Vec_0 = Vec_Type^0];
+> [Vec_1 = Vec_Type^1];

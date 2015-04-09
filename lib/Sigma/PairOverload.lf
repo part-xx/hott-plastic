@@ -1,0 +1,174 @@
+> module PairOverload where;
+
+Scheme for overloading pair syntax, from "Programming with coercions" paper.
+
+See that paper for additional documentation.
+
+> import Sigma;
+> import Pair;
+
+
+> Inductive [A:Type][B:Type][a:El A][b:El B][SU:Type]
+>	Constructors [su : SU];
+>  -- a singleton type representing uses of the pair notation
+
+> Claim the_b : (A:Type)(B:Type)(a:A)(b:B)SU A B a b -> B;
+> Intros _ _ _ b _;
+> Refine b;
+> ReturnAll;
+
+> Claim the_a : (A:Type)(B:Type)(a:A)(b:B)SU A B a b -> A;
+> Intros _ _ a _ _;
+> Refine a;
+> ReturnAll;
+
+
+<H2>Simple Coercions
+</H2>
+
+The easier one first: notice that no family is needed here.
+
+> Claim su_to_pair 
+>  : (A:Type)(B:Type)(a:A)(b:B)SU A B a b -> Pair A B;
+> Intros _ _ a b _;
+> Refine pair ? ? a b;
+> ReturnAll;
+
+This one needs the family, because we can't produce a family B from a 
+type B'. 
+
+> Claim su_to_sigma
+>  : (A:Type)(B:A->Type) (a:A)(b:B a)SU A (B a) a b -> Sigma A B;
+> Intros _ _ a b _;
+> Refine sigma ? B a b;
+> ReturnAll;
+
+And now declare these as coercions.
+
+> Coercion 
+>  Parameters [A:Type][B:A -> Type][a:A][b:B a] = su_to_sigma A B a b;
+> Coercion 
+>  Parameters [A:Type][B:Type][a:A][b:B]        = su_to_pair  A B a b;
+
+
+
+<H2>Coercion rules for Sigma
+</H2>
+
+> Claim sigma_fst 
+>  : (A,B,C:Type)(D:C -> Type)(a:A)(b:B)
+>    (x : SU A B a b)
+>    (f : SU A B a b -> C) (d : D(f(x)))
+>    (SU (SU ? ? a b) ? x d) -> Sigma C D;
+> Intros _ _ _ _ _ _ _ _ _ i;
+> Refine sigma C D ? d;
+> ReturnAll;
+
+> Claim sigma_snd 
+>  : (A,B,C:Type)(D:A -> Type)(a:A)(b:B)(c:C)
+>    (y : SU B C b c)
+>    (f : SU B C b c -> D a) 
+>    (SU ? (SU ? ? b c) a y) -> Sigma A D;
+> Intros _ _ _ _ _ _ _ _ _ i;
+> Refine sigma A D a;
+> Refine f y;
+> ReturnAll;
+> sigma_snd;
+
+
+> Coercion 
+>  Parameters [A,B,C:Type][D:C->Type][a:A][b:B][x:SU A B a b]
+>             [f:SU A B a b -> C][d:D(f x)]
+>  Prerequisites f
+>   = sigma_fst A B C D a b x f d;
+
+> Coercion 
+>  Parameters [A,B,C:Type][D:A->Type][a:A][b:B][c:C][y:SU B C b c]
+>             [f : SU B C b c -> D a]
+>  Prerequisites f
+>   = sigma_snd A B C D a b c y f;
+
+
+> Claim sigma_double 
+>  : (A,B,C,D:Type)(E:Type)(F:E -> Type)
+>    (a:A)(b:B)(c:C)(d:D)
+>    (x : SU ? ? a b) (y : SU ? ? c d)
+>    (f : SU ? ? a b -> E)
+>    (g : SU ? ? c d -> F (f x))
+>    (p : SU ? ? x y)
+>    Sigma E F;
+> Intros _ _ _ _ _ _ _ _ _ _ _ _ f g p;
+> Refine sigma ? ?;
+> 2 Refine f x;
+> Refine g y;
+> ReturnAll;
+
+> Coercion
+>  Parameters [A,B,C,D,E:Type][F:E->Type][a:A][b:B][c:C][d:D]
+>             [x : SU A B a b][y:SU C D c d]
+>             [f:SU A B a b -> E][g : SU C D c d -> F (f x)]
+>  Prerequisites f,g
+>    = sigma_double A B C D E F a b c d x y f g
+>    : SU (SU A B a b) (SU C D c d) x y -> Sigma E F;
+
+
+
+
+<H2>Coercion rules for Pair
+</H2>
+
+> Claim pair_fst 
+>  : (A,B,C,D:Type)(a:A)(b:B)
+>    (x : SU A B a b)
+>    (f : SU A B a b -> C) (d : D)
+>    (SU (SU ? ? a b) ? x d) -> Pair C D;
+> Intros _ _ _ _ _ _ _ _ _ i;
+> Refine pair C D (f x) d;
+> ReturnAll;
+
+> Claim pair_snd 
+>  : (A,B,C,D:Type)(a:A)(b:B)(c:C)
+>    (y : SU B C b c)
+>    (f : SU B C b c -> D) 
+>    (SU ? (SU ? ? b c) a y) -> Pair A D;
+> Intros _ _ _ _ _ _ _ _ _ i;
+> Refine pair A D a;
+> Refine f y;
+> ReturnAll;
+
+> Coercion 
+>  Parameters [A,B,C,D:Type][a:A][b:B][x:SU A B a b]
+>             [f:SU A B a b -> C][d:D]
+>  Prerequisites f
+>   = pair_fst A B C D a b x f d;
+
+> Coercion 
+>  Parameters [A,B,C,D:Type][a:A][b:B][c:C][y:SU B C b c]
+>             [f : SU B C b c -> D]
+>  Prerequisites f
+>   = pair_snd A B C D a b c y f;
+
+
+> Claim pair_double 
+>  : (A,B,C,D:Type)(E,F:Type)
+>    (a:A)(b:B)(c:C)(d:D)
+>    (x : SU ? ? a b) (y : SU ? ? c d)
+>    (f : SU ? ? a b -> E)
+>    (g : SU ? ? c d -> F)
+>    (p : SU ? ? x y)
+>    Pair E F;
+> Intros _ _ _ _ _ _ _ _ _ _ _ _ f g p;
+> Refine pair ? ?;
+> 2 Refine f x;
+> Refine g y;
+> ReturnAll;
+
+
+> Coercion
+>  Parameters [A,B,C,D,E,F:Type][a:A][b:B][c:C][d:D]
+>             [x : SU A B a b][y:SU C D c d]
+>             [f:SU A B a b -> E][g : SU C D c d -> F]
+>  Prerequisites f,g
+>    = pair_double A B C D E F a b c d x y f g
+>    : SU (SU A B a b) (SU C D c d) x y -> Pair E F;
+

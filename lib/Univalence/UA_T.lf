@@ -1,0 +1,27 @@
+> module UA_T where;
+
+> import ML_Equality;
+> import ML_TypesEq;
+> import Function;
+> import Sigma;
+> import Pair;
+
+Quasi-inverses
+
+> [is_linv = [A, B : Type] [f : A ==> B] [g : B ==> A] Pi A ([x:A]Id_ A (ap_ B A g (ap_ A B f x)) x)];
+> [is_qinv = [A, B : Type] [f : A ==> B] Sigma (B ==> A) ([g : B ==> A]Pair (is_linv A B f g) (is_linv B A g f))];
+
+Biequivalences - has right inverse /\ has left inverse
+
+> [is_biequiv = [A, B : Type] [f : A ==> B] Pair (Sigma (B ==> A) ([g : B ==> A]is_linv A B f g)) (Sigma (B ==> A) ([h : B ==> A]is_linv B A h f))];
+
+> [is_equiv = is_biequiv];
+
+Type of equivalences
+
+> [(~~) [A, B : Type] = Sigma (A ==> B) ([f : A ==> B]is_equiv A B f)];
+
+Univalence axiom
+
+> [UA_T : (A, B : Type) ((A ~~ B) ~~ (Id_T A B ))];
+

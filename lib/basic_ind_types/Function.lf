@@ -1,0 +1,62 @@
+> module Function where;
+
+Function spaces (non-dependent)
+
+represented this way - it will be faster than a Pi synonym
+
+> Inductive
+>       [ A,B : Type ]
+>       [ Pi_ : Type ]
+>       Constructors
+>       [ La_ : (f:(x:El A)El B) Pi_];
+> [(==>) = Pi_ ];
+ 
+  
+Now, the means to use a Pi type.
+   
+> Claim ap_ : (A,B:Type)(f:Pi_ A B) (_:A)B;
+> Intros A B pi a;
+> Refine E_Pi_ ? ? ([_:Pi_ A B]B) ? pi;
+> Intros f;
+> Refine f a;
+> ReturnAll;
+
+> Claim Id : (A:Type)Pi_ A A;
+> Refine [A:Type]La_ A A [x:A]x;
+
+ap2_ : Like ap_, but with two curried arguments.
+
+> Claim ap2_ : (A:Type)(B:Type)(C:Type)(_:A ==> (B ==> C)) (_:A)(_:B)C;
+> Intros A B C f;
+> Intros a;
+> Refine ap_;
+> Refine (ap_ ? ? f) a;
+> ReturnAll;
+
+La2_ : Like La_, but with two curried arguments.
+
+> Claim La2_ : (A:Type)(B:Type)(C:Type)(f : (_:A)(_:B)C) A ==> (B ==> C);
+> Intros _ _ _ _;
+> Refine La_;
+> Intros a;
+> Refine La_;
+> Refine f a;
+> ReturnAll;
+
+> Claim comp : (A:Type)(B:Type)(C:Type) (A==>B) -> (B ==> C) -> (A ==> C);
+> Intros _ _ _ f g;
+> Refine La_ A C ([x:A]ap_ B C g (ap_ A B f x));
+> ReturnAll;
+
+Associativity strictness test
+
+ [A,B,C,D : Type];
+ [f : A ==> B];
+ [g : B ==> C];
+ [h : C ==> D];
+ [fg_h = comp A C D (comp A B C f g) h];
+ [f_gh = comp A B D f (comp B C D g h)];
+ [T : (A ==> D) -> Type];
+ [l = [x:T(fg_h)]A];
+ [y : T(f_gh)];
+ l y;

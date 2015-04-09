@@ -1,0 +1,59 @@
+> module Nat_IndElim where;
+
+> import Nat;
+
+> [IE_NatT : (T : (_:Nat)Type)(P : (n:Nat)(_:T n)Prop)
+>	     (b:T zero)(_:P zero b)
+>	     (c_T : (n : Nat)(h:T n)(_:P n h) T (succ n))
+>	     (c_P : (n : Nat)(h:T n)(p:P n h) P (succ n) (c_T n h p))
+>	     (n : Nat) T n];
+
+> [IE_NatP : (T : (_:Nat)Type)(P : (n:Nat)(_:T n)Prop)
+>	     (b:T zero)(pb:P zero b)
+>	     (c_T : (n : Nat)(h:T n)(_:P n h) T (succ n))
+>	     (c_P : (n : Nat)(h:T n)(p:P n h) P (succ n) (c_T n h p))
+>	     (n : Nat) P n (IE_NatT T P b pb c_T c_P n)];
+
+> [Ind_Nat : (P : (_:Nat)Prop)
+>	     (_:P zero)
+>	     (c_P : (n : Nat)(_:P n) P (succ n))
+>	     (n : Nat) P n];
+
+[T_sec = IE_NatT T P b pb c_T c_P]
+Ind_Nat ([n:Nat]P n (T_sec n)) (P zero (T_sec zero)) (
+
+> SimpleElimRule Nat IE_NatT 7 
+> 	[zero 0
+>		 = [T : (_:Nat)Type]
+>		   [P : (n:Nat)(_:T n)Prop]
+>		   [b : T zero]
+>		   [pb : P zero b]
+>		   [c_T : (n:Nat)(h:T n)(_:P n h) T (succ n)]
+>		   [c_P : (n:Nat)(h:T n)(p:P n h) P (succ n) (c_T n h p)]
+>		   b
+>		:  (T : (_:Nat)Type)
+>		   (P : (n:Nat)(_:T n)Prop)
+>		   (b : T zero)
+>		   (pb : P zero b)
+>		   (c_T : (n:Nat)(h:T n)(_:P n h) T (succ n))
+>		   (c_P : (n:Nat)(h:T n)(p:P n h) P (succ n) (c_T n h p))
+>		   T zero];
+
+ SimpleElimRule Nat IE_NatT 7 
+ 	[succ 1
+		 = [T : (_:Nat)Type]
+		   [P : (n:Nat)(_:T n)Prop]
+		   [b : T zero][pb : P zero b]
+		   [c_T : (n:Nat)(h:T n)(_:P n h) T (succ n)]
+		   [c_P : (n:Nat)(h:T n)(p:P n h) P (succ n) (c_T n h p)]
+		   [n : Nat]
+		   c_T n (IE_NatT T P b pb c_T c_P n) (IE_NatP T P b pb c_T c_P n)
+		:  (T : (_:Nat)Type)
+		   (P : (n:Nat)(_:T n)Prop)
+		   (b : T zero)(pb : P zero b)
+		   (c_T : (n:Nat)(h:T n)(_:P n h) T (succ n))
+		   (c_P : (n:Nat)(h:T n)(p:P n h) P (succ n) (c_T n h p))
+		   (n : Nat)
+		   T (succ n)];
+
+

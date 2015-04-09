@@ -1,0 +1,15 @@
+> module W where;
+
+The W type.
+
+> Inductive [A:Type][B:(x:El A)Type] [W:Type]
+>   Constructors 
+>	[w:(x:El A)(f:(y:El (B x))W)W]
+
+
+TEST
+
+> [A:Type][B:A->Type][a:A][f:B a -> W A B];
+> [w0 = w A B a f];
+
+> Normal E_W A B ([_:W A B]A) ? w0;

@@ -1,0 +1,42 @@
+> module Nat_dbl_elim where;
+
+> import Nat;
+> import Function;
+> import Pi;
+> import TypeN;
+
+
+
+> Claim Nat_dbl_elim :
+>    (T:Nat->Nat->Type)
+>    (T zero zero)->
+>    ((n:Nat) T zero n -> T zero (succ n))->
+>    ((m:Nat)((n:Nat) T m n) -> T (succ m) zero)->
+>    ((m:Nat)((n:Nat)T m n)->(n:Nat)T (succ m) n->(T (succ m) (succ n)))->
+>    (m,n:Nat)(T m n);
+
+> Intros T bb_step bs_step sb_step ss_step;
+> Intros m0;
+
+> Claim lemma : Pi[m:Nat] Pi[n:Nat] T m n; 
+> Refine La;
+> Intros m;
+> Refine E_Nat ([m:Nat]Pi[n:Nat]T m n);
+> 2 Refine La;
+> 2 Intros n;
+> Refine E_Nat ([n:Nat]T zero n);
+> Refine bs_step;
+> Refine bb_step;
+> ReturnAll;
+
+> Intros n H;
+> Refine La;
+> Refine E_Nat ([x:Nat]T (succ n) x);
+> Refine ss_step n (ap ? ? H);
+> Refine sb_step;
+> Refine ap ? ? H;
+> ReturnAll;
+
+> Refine ap ? ? (ap ? ? lemma m0);
+> ReturnAll;
+> Nat_dbl_elim;

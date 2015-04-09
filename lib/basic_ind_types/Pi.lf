@@ -1,0 +1,26 @@
+> module Pi where;
+
+> import TypeN;
+
+Dependent Pi type
+
+> Inductive 
+>		[A : Type]
+>		[B : (x:El A) Type]
+>		[Pi : Type]
+>		Constructors
+>		[ La : (f:(x:El A)El (B x)) Pi];
+
+> AddToUniverse Type^ Pi;
+
+Now, the means to use a Pi type.
+
+> Claim ap : (A:Type)(B:(_:A)Type)(f:Pi A B) (x:A)B x;
+> Intros A B f x;
+> Refine E_Pi ? ? ([G:Pi A B]B(x));
+> Refine f;
+> Refine [g:?]g x;
+> ReturnAll;
+
+> [ pi_to_dp = ap ];
+

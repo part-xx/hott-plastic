@@ -1,0 +1,192 @@
+> module good where;
+
+Predicate logic with equality:
+
+> [True : Prop];
+> [TrueI : True];
+
+> [False : Prop];
+> [FalseE : (P : Prop) False -> P];
+
+> [Imp : Prop -> Prop -> Prop];
+> [ImpI : (P,Q : Prop) (P -> Q) -> Imp P Q];
+> [ImpE : (P,Q : Prop) Imp P Q -> P -> Q];
+
+> [Not = [P : Prop] Imp P False];
+
+> [And : Prop -> Prop -> Prop];
+> [AndI : (P,Q : Prop) P -> Q -> And P Q];
+> [AndE1 : (P,Q : Prop) And P Q -> P];
+> [AndE2 : (P,Q : Prop) And P Q -> Q];
+
+> [Or : Prop -> Prop -> Prop];
+> [OrI1 : (P,Q : Prop) P -> Or P Q];
+> [OrI2 : (P,Q : Prop) Q -> Or P Q];
+> [OrE : (P,Q,R : Prop) Or P Q -> (P -> R) -> (Q -> R) -> R];
+
+> [Iff = [P,Q : Prop] And (Imp P Q) (Imp Q P)];
+
+> [All : (A : Type) (A -> Prop) -> Prop];
+> [AllI : (A : Type) (P : A -> Prop) ((x : A) P x) -> All A P];
+> [AllE : (A : Type) (P : A -> Prop) (a : A) All A P -> P a];
+
+> [Ex : (A : Type) (A -> Prop) -> Prop];
+> [ExI : (A : Type) (P : A -> Prop) (a : A) P a -> Ex A P];
+> [ExE : (A : Type) (P : A -> Prop) (Q : Prop) Ex A P -> ((x : A) P x -> Q) -> Q];
+
+> [Eq : (A : Type) A -> A -> Prop];
+> [EqI : (A : Type) (a : A) Eq A a a];
+> [EqE : (A : Type) (P : A -> Prop) (a,b : A) Eq A a b -> P a -> P b];
+
+Sets
+
+> [Set : Type -> Type];
+> [set : (A : Type) (A -> Prop) -> Set A];
+> [in : (A : Type) A -> Set A -> Prop];
+
+Computation rule : (a in {x : A | P x}) --> P a
+Note: even though we never compute with proof terms, we *do* want to compute with propositions
+
+> SimpleElimRule Set in 3
+>  [ set 2 = [A : Type] [a : A]
+>            [_ : Type] [P : A -> Prop]
+>            P a
+>          : (A : Type) (a : A)
+>            (_ : Type) (P : A -> Prop)
+>            Prop ];
+
+> [empty = [A : Type] set A [_:A] False];
+> [full = [A : Type] set A [_:A] True];
+> [add = [A : Type] [X : Set A] [a : A] set A [x : A] Or (in A x X) (Eq A x a)];
+add A X a = X u {a}
+> [minus = [A : Type] [X : Set A] [a : A] set A [x : A] And (in A x X) (Not (Eq A x a))];
+minus A X a = X \ {a}
+
+Let's give ourselves the natural numbers:
+
+> Inductive [Nat:Type] Constructors [zero:Nat] [succ:(n:Nat)Nat];
+
+... with the ability to prove things by induction
+
+> [Ind : (P : Nat -> Prop) P zero -> ((n : Nat) P n -> P (succ n)) ->
+>    (n : Nat) P n];
+
+> [plus = [x,y:Nat] E_Nat ([_:Nat]Nat) y ([_:Nat][z:Nat]succ z) x ];
+
+-- testing reductions with metavars
+
+> Normal plus zero zero;
+> Normal plus (succ zero) zero;
+> Normal plus (succ (succ zero)) (succ (succ zero));
+> Normal plus (succ (succ zero)) (succ (succ ?));
+> Normal plus (succ (succ ?)) (succ (succ zero));
+
+
+The following proof crashes Plastic:
+
+
+> Claim EqResp : (A,B:Type)(f:A -> B)(x,y:A)Eq ? x y -> Eq ? (f x) (f y);
+> Intros _ _ _ _ _ H;
+> Refine EqE ? [y:?]Eq B (f x) (f y);
+> Refine EqI;
+> Refine H;
+> ReturnAll;
+
+> Claim plus_assoc : (p,n,m : Nat) Prf(Eq Nat (plus m (plus n p)) (plus (plus m n) p));
+> Intros p n;
+> Refine Ind [m:Nat]Eq ? (plus m (plus n p)) (plus (plus m n) p);
+> m_1 Refine EqI;
+> Intros m_ H;
+> Refine EqResp ? ? succ;
+> Refine H;
+> ReturnAll;
+> plus_assoc;
+
+
+
+Dependent products
+
+> Inductive [A : Type] [B : (_:El A) Type] [Pi : Type]
+>   Constructors [lambda : (f : (x : El A) El (B x)) Pi];
+
+> [app = [A : Type] [B : A -> Type] [f : Pi A B] [a : A]
+>     E_Pi A B ([_ : Pi A B] B a)
+>              ([b : (x : A) B x] b a)
+>              f];
+
+and the appropriate logical rule
+
+> [Pi_Ind : (A : Type) (B : A -> Type) (P : Pi A B -> Prop)
+>           ((f : (x : A) B x) P (lambda A B f)) ->
+>           (F : Pi A B) P F];
+
+With this, we can prove eta-equality (crashes Plastic again):
+
+> Claim eta : (A : Type) (B : A -> Type) (F : Pi A B) Eq (Pi A B) F (lambda A B [x : A] app A B F x);
+> Intros A B F;
+> Refine Pi_Ind ? ? [F : ?] Eq ? F (lambda A B [x : A] app A B F x);
+> Intros f;
+> Refine EqI;
+> ReturnAll;
+> eta;
+
+
+Here are some other things we'd like to do:
+
+The set of all sets with at least n members, defined by recursion on n.
+
+At_Least A n = {X : Set A | X has at least n members}
+
+> [At_Least = [A : Type] E_Nat ([_:Nat] Set (Set A))
+>    (full (Set A))
+>    ([n : Nat] [at_least_n : Set (Set A)] set (Set A) [X : Set A]
+>        Ex A [a : A] And (in A a X) (in (Set A) (minus A X a) at_least_n))];
+> [at_least [A : Type] [X : Set A] [n : Nat] = in (Set A) X (At_Least A n)];
+
+> [at_most [A : Type] [X : Set A] [n : Nat] =
+>   Not (at_least A X (succ n))];
+
+card A X n is the proposition that X has exactly n members:
+> [card [A : Type] [X : Set A] [n : Nat] = And (at_least A X n) (at_most A X n)];
+
+
+------------------
+
+> [A : Type]
+> [P : Prop]
+> [a : A]
+> [p : Prf P];
+
+Bad things!  These shouldn't work.
+
+[x : El Prop]
+[x : Prf Prop]
+[x : El (Prf P)]
+[x : Prf (El A)]
+[x : Prf A]
+[x : El P]
+[x : p];
+
+So we have:
+
+- Props that depend on Props (e.g. Not P)
+- Props that depend on Types (e.g. All A P)
+- Props that depend on objects (e.g. Eq A a b)
+- Proofs that depend on Props (e.g. ImpI P Q p)
+- Proofs that depend on proofs (e.g. ImpI P Q p)
+- Proofs that depend on Types (e.g. AllI A P p)
+- Proofs that depend on objects (e.g. ExI A P a p)
+- Types that depend on Types (e.g. Set A)
+- Types that depend on objects (e.g. Vect A n)
+- objects that depend on Props (e.g. set A P)
+- objects that depend on Types (e.g. set A P)
+- objects that depend on objects (e.g. succ n)
+
+We shall not be using:
+
+Props that depend on proofs
+Types that depend on Props
+Types that depend on proofs
+objects that depend on proofs
+
+I don't care if these are allowed or disallowed.

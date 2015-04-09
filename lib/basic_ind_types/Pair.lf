@@ -1,0 +1,26 @@
+> module Pair where;
+
+> Inductive 
+>	[A,B:Type][Pair:Type]
+>   Constructors
+>   [pair:(x:El A)(y:El B)Pair];
+
+> Claim left : (A,B:Type)(Pair A B)->A;
+> Intros A B;
+> Refine E_Pair ? ? [_:Pair A B]A;
+> Intros a b;
+> Refine a;
+> ReturnAll;
+
+> Claim right : (A,B:Type)(Pair A B)->B;
+> Intros A B;
+> Refine E_Pair ? ? [_:Pair A B]B;
+> Intros a b;
+> Refine b;
+> ReturnAll;
+
+
+---
+
+> Claim uncurry : (A,B,C:Type)(A -> B -> C) -> Pair A B -> C;
+> Refine [A,B,C:Type][f:A->B->C]E_Pair ? ? ([_:Pair A B]C) f;

@@ -1,0 +1,9 @@
+> module ListType where;
+
+> import List;
+> import TypeN;
+
+> AddToUniverse Type^ List;
+
+> [List_0 = List_Type^0 ];
+> [List_1 = List_Type^1 ];

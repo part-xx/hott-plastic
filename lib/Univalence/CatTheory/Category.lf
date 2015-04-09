@@ -1,0 +1,28 @@
+> module Category where;
+
+> import Function;
+> import Fol;
+> import ML_Equality;
+
+> Inductive 
+> 	[Ob : Type]
+>	[Hom : (a, b : El Ob)Type]
+>	[PreCategory : Type]
+>	Constructors
+>	[pre_cat : 
+>		(comp : (a, b, c : El Ob)El (Pi_ (Hom a b) (Pi_ (Hom b c) (Hom a c))))
+>		(id_ : (a : El Ob)El (Hom a a))
+>		(assoc : (a, b, c, d : El Ob)
+>			 (f : El (Hom a b))(g : El (Hom b c))(h : El (Hom c d))
+>			 El (Id_ (Hom a d) 
+>			 (ap2_ (Hom a c) (Hom c d) (Hom a d) (comp a c d) (ap2_ (Hom a b) (Hom b c) (Hom a c) (comp a b c) f g) h)
+>			 (ap2_ (Hom a b) (Hom b d) (Hom a d) (comp a b d) f (ap2_ (Hom b c) (Hom c d) (Hom b d) (comp b c d) g h))))
+>		(lunit : (a, b : El Ob)
+>			 (f : El (Hom a b))
+>			 El (Id_ (Hom a b) (ap2_ (Hom a a) (Hom a b) (Hom a b) (comp a a b) (id_ a) f) f))
+>		(runit : (a, b : El Ob)
+>			 (f : El (Hom a b))
+>			 El (Id_ (Hom a b) (ap2_ (Hom a b) (Hom b b) (Hom a b) (comp a b b) f (id_ b)) f))
+>		PreCategory];
+
+> 

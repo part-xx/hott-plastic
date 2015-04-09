@@ -1,0 +1,8 @@
+> [U : Type];
+> [T : U -> Type];
+
+> [N : U];
+> [O : T N];
+> [S : T N -> T N];
+> [EN : (C : T N -> U) T (C O) -> (n : T N) (T (C n) -> T (C (S n))) ->
+>   (n : T N) T (C n)];

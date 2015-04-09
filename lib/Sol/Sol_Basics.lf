@@ -1,0 +1,120 @@
+> module Sol_Basics where;
+
+Definitions of Common Logical Constants 
+
+> import Sol;
+
+
+%-------------------------------------------------------------------------------
+Tautology.
+
+<> [ => = Imp];
+
+> [tautology = {P:Prop}P=>P : Prop];
+> Claim prf_tautology : Prf tautology;
+> Refine LL;
+> Intros P;
+> Refine LL;
+> Intros p;
+> Refine p;
+> ReturnAll;
+
+
+
+<x:Prop><y:Prf(x)>y : {x:Prop}x=>x
+LL Prop ([x:Prop]...) ([x:Prop] /<y:Prf(x)>y/)
+	-- one step, copy binder to a2, a3 and copy type to a1
+LL Prop ([x:Prop]...) ([x:Prop] /LL (Prf x) ([y:Prf(x)]...) ([y:Prf(x)]y)/)
+	-- do recursively on a3. NB final term falls out.
+	-- QQ: on how to produce term in a2 binding?
+
+%---------------------------------------
+Useful form of the above.
+
+> Claim PropId : (P:Prop)Prf(P => P);
+> Intros P;
+> Refine LL;
+> Intros pp;
+> Refine pp;
+> ReturnAll;
+
+%-------------------------------------------------------------------------------
+Absurd & Not
+
+> [absurd = {A:Prop}A : Prop ];
+>
+> [not = [A:Prop]A => absurd : Prop -> Prop];
+
+> Claim E_absurd : Prf (absurd => {N:Prop}N);
+> Refine LL;
+> Intros x;
+> Refine x;
+> ReturnAll;
+
+
+%-------------------------------------------------------------------------------
+MP = "cut" = App
+
+cut = [a:A][h:A->B]h a : A->(A->B)->B
+
+> [MP = App];
+
+
+
+%-------------------------------------------------------------------------------
+Exists.
+
+> [ Ex = [T:Type][P:T->Prop]{B:Prop}({t:T}P t => B) => B 
+>      : (T:Type)(T -> Prop) -> Prop ];
+
+%---------------------------------------
+
+> Claim c_ExIntro : (T:Type)(wit:T)(P:T->Prop)Prf( P wit => Ex T P );
+> Intros T wit P;
+
+> Refine LL;
+> Intros p_wit;
+
+> Refine LL;
+> Intros p;
+
+> Refine LL;
+> Intros imp;
+
+> Refine App ? ? (App ? ? imp wit) p_wit;
+> ReturnAll;
+
+
+%---------------------------------------
+
+> Claim c_ExElim
+>			: (T:Type)(P:T->Prop)Prf( Ex T P => {N:Prop}({t:T}P t => N) => N );
+> Intros T P;
+
+> Refine LL;
+> Intros p_Ex;
+
+> Refine LL;
+> Intros N;
+
+> Refine LL;
+> Intros M;
+
+lego = (p_Ex N) M
+NB for user-syn, refine maps to nested App ? ? ....
+
+> Refine App ? ? (App ? ? p_Ex N) M;
+> ReturnAll;
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Exists2
+
+> [ Ex2 = [T,S:Type][P:T->S->Prop]{B:Prop}({t:T}{s:S}(P t s) => B) => B
+>       : (T,S:Type)(_:T->S->Prop)Prop ];
+
+
+TODO: for elim and intro for here.
+

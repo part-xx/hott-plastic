@@ -1,0 +1,9 @@
+
+all : 
+	make which_ghc="ghc -cpp -H30M -fglasgow-exts -package text -package data"
+
+tar : 
+	tar cvzf rh.tgz *hs LF_Parser.hi *ly *Makefile* ghc-hooks.c produce-identifiers
+
+
+

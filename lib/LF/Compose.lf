@@ -1,0 +1,17 @@
+> module Compose where;
+
+> Claim compose : 
+>       (A:Type) (B:A->Type) (C:(x:A)(y:B x)Type) 
+>         (f : (x:A)B x) -> ((x:A)(y:B x)C x y) -> (x:A)C x (f x);
+> Intros _ _ _ fA fB x;
+> Refine fB x (fA x);
+> ReturnAll;
+
+> Claim compose_ : (A,B,C:Type) (A -> B) -> (B -> C) -> (A -> C);
+> Intros _ _ _ g f x;
+> Refine f (g x);
+> ReturnAll;
+
+NB this is trans. of DP too. - should use in trans of ALL arrow ops. 
+
+

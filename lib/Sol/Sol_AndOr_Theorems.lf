@@ -1,0 +1,151 @@
+> module Sol_AndOr_Theorems where;
+
+> import Sol_Basics;
+> import Sol_AndOr;
+> import Sol_Relations;
+
+Properties of the Relation 'and'
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+> Claim sym_and : Prf(c_Sym Prop and);
+> Refine LL;
+> Intros x;
+> Refine LL;
+> Intros y;
+> Refine LL;
+> Intros H;
+> Refine f_pair;
+> Refine App ? ? (p_fst x y) H;
+> Refine App ? ? (p_snd x y) H;
+> ReturnAll;
+
+
+> Claim trans_and : Prf(c_Trans Prop and);
+> Refine LL;
+> Intros x;
+> Refine LL;
+> Intros y;
+> Refine LL;
+> Intros z;
+
+> Refine LL;
+> Intros p_xy;
+> Refine LL;
+> Intros p_yz;
+> Refine f_pair;
+> Refine App ? ? (p_snd y z) p_yz;
+> Refine App ? ? (p_fst x y) p_xy;
+> ReturnAll;
+
+NB meta-intros - combined Refine LL and Intros.
+Could do this via (Refine LL ? ? ([x:?]?)) etc - implicit intros? 
+
+%---------------------------------------
+
+> Claim and_not_Refl : Prf (not $ c_Refl Prop and);
+> Refine LL;
+> Intros p_refl;
+
+now to show absurd, from assumed reflexivity of and.
+
+> Refine LL;
+> Intros P;
+> [p_and_PP = App ? ? p_refl P ];
+> Refine App ? ? (p_fst P P) p_and_PP;
+> ReturnAll;
+> and_not_Refl;
+
+
+%---------------------------------------
+
+And is a PER...
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Properties of Relation 'or'
+
+> Claim sym_or : Prf(c_Sym Prop or);
+> Refine LL;
+> Intros x;
+
+> Refine LL;
+> Intros y;
+
+> Refine LL;
+> Intros Rxy;
+
+now, an or_elim
+
+> Refine App ? ? (App ? ? (App ? ? Rxy (or y x)) ?) ?;
+> Refine p_inl y x;
+> Refine p_inr y x;
+> ReturnAll;
+
+> sym_or;
+
+------
+
+Contains an embedded lemma!
+
+> Claim not_trans_or : Prf (not $ c_Trans Prop or);
+> Refine LL;
+> Intros p_trans;
+> Refine LL;
+> Intros P;
+
+now, from trans. of or to a proof of P. 
+	
+
+> &F [ p_trans_PTP = App ? ? (App ? ? (App ? ? p_trans ?) ?) ? : Prf(or P ? => or ? P => or P P) ];
+
+> [ p_trans_PTP = App ? ? (App ? ? (App ? ? p_trans P) tautology) P ];
+
+> Claim lemma : Prf({A:Prop}or A A => A);
+> Refine LL;
+> Intros A;
+> Refine LL;
+> Intros or_AA;
+
+> Refine App ? ? (App ? ? (App ? ? or_AA A) ?) ?;
+> Refine App ? ? prf_tautology A;
+> Refine App ? ? prf_tautology A;
+> ReturnAll;	-- until last MV 
+
+> [ prf_p = App ? ? lemma P ];
+> Refine App ? ? prf_p; 
+> Refine App ? ? (App ? ? p_trans_PTP ?) ?;
+
+> Refine App ? ? (p_inl tautology P) prf_tautology;
+> Refine App ? ? (p_inr P tautology) prf_tautology;
+> ReturnAll;
+> not_trans_or;
+
+
+------
+Now, some tests
+
+> [A,B:Prop];
+> [o: Prf(or A B)];
+> c_Sym;
+> sym_or;
+
+
+> &F App ? ? (App ? ? (App ? ? sym_or ?) ?); 
+	THIS FAILS - missing m_25
+
+> App ? ? (App ? ? (App ? ? sym_or A) B) o;
+	This is the full expression - it works
+
+> Forget A;
+
+
+CONCEPT:
+	App ? ? for type-label arg_synth application
+
+	(App ? ? x ?) for missing arg synthesis
+
+	Criterion: BV occurs in result term? (NB not the bind types)

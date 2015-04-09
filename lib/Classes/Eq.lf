@@ -1,0 +1,28 @@
+> module Eq where;
+
+> import Sol;
+> import Sol_Relations;
+> import BoolFns;
+
+meta_eq too? with proofs instantiated for this ?
+
+> Inductive 
+>	[A:Type]
+>	[D_Eq : Type]
+>	Constructors
+>	[d_eq : (r : (x:El A)(y:El A)El Bool)
+>	        (eq : El (Prf(c_EqRel A (BoolRel_to_Rel A r)))) D_Eq ];
+
+> Claim eq : (A:Type) D_Eq A -> A -> A -> Bool; 
+> Intros A e x y; 
+> Refine E_D_Eq A ([e:D_Eq A]Bool) ? e;
+> Intros r eq;
+> Refine r x y;
+> ReturnAll;
+
+
+Now, notEq? 
+
+default is possible - can represent with Either type.
+
+BUT - problem asserting that (not.neq) is an EqRel? (bcos intuitionisc?)

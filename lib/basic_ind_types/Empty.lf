@@ -1,0 +1,24 @@
+> module Empty where;
+
+> import TypeN;
+
+---
+
+> Inductive [Empty:Type] Constructors;
+
+> AddToUniverse Type^ Empty;		-- often useful.
+
+> import Function;
+> [NOT [A:Type] = Pi_ A Empty];
+
+this is "not" on a non-SOL type.
+
+---
+
+more convenient form? 
+
+> Claim empty_elim : (A:Type) Empty -> A;
+> Intros A;
+> Refine E_Empty ([_:Empty]A);
+> ReturnAll;
+

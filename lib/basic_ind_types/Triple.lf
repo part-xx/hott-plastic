@@ -1,0 +1,33 @@
+> module Triple where;
+
+> Inductive 
+>	[A,B,C:Type][Triple:Type]
+>   Constructors
+>   [triple:(x:El A)(y:El B)(z:El C)Triple];
+
+> Claim t_left : (A,B,C:Type)(Triple A B C)->A;
+> Intros A B C;
+> Refine E_Triple ? ? ? [_:Triple A B C]A;
+> Intros a b c;
+> Refine a;
+> ReturnAll;
+
+> Claim t_middle : (A,B,C:Type)(Triple A B C)->B;
+> Intros A B C;
+> Refine E_Triple ? ? ? [_:Triple A B C]B;
+> Intros a b c;
+> Refine b;
+> ReturnAll;
+
+> Claim t_right : (A,B,C:Type)(Triple A B C)->C;
+> Intros A B C;
+> Refine E_Triple ? ? ? [_:Triple A B C]C;
+> Intros a b c;
+> Refine c;
+> ReturnAll;
+
+---
+
+> Claim t_uncurry : (A,B,C,D:Type)(A -> B -> C -> D) -> Triple A B C -> D;
+> Refine [A,B,C,D:Type][f:A->B->C->D]E_Triple ? ? ? ([_:Triple A B C]D) f;
+

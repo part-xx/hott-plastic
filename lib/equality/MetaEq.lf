@@ -1,0 +1,26 @@
+> module MetaEq where;
+
+> import Sol;
+> import Function;
+
+
+%-------------------------------------------------------------------------------
+Definitions of conditions on equality 
+
+most of these will need proving for each instance of equality.
+
+Sol_Relations contains definition of conditions on 2-ary DPs (and 2-ary Pi)
+
+This is the only thing we can really define here.
+
+NB keep m and n outside the prop to make it more useful.
+
+> [ c_Eq_subst = 
+>       [T : Type]
+>       [Eq : T -> T -> Prop]
+>       [m : T]
+>       [n : T]
+>       Eq m n => {P:Pi_ T Prop}ap_ T Prop P m => ap_ T Prop P n ];
+
+
+

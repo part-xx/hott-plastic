@@ -1,0 +1,99 @@
+> module Nat_plus_theorems where;
+
+> import Nat_arith;
+> import ML_Equality;
+
+
+> Claim plus_zero : (n:Nat)Eq Nat (plus n zero) n;
+> Refine E_Nat ([n:Nat]Eq Nat (plus n zero) n); 
+> 2 Refine Eq_refl;
+> Intros n h;
+> Refine Eq_resp ? ? succ ? ? h; 		-- could omit this - it reduces
+> ReturnAll;
+
+
+
+> Claim plus_succ : (m,n:Nat)Eq Nat (plus m (succ n)) (succ (plus m n));
+> Intros m n;
+> Refine E_Nat ([m:Nat]Eq Nat (plus m (succ n)) (succ (plus m n)));
+> 2 Refine Eq_refl;
+> Intros x ih;
+> Refine Eq_resp ? ? succ ? ? ih;
+> ReturnAll;
+
+
+
+
+
+
+
+---
+
+> [op_commutes = (A:Type)(op:A->A->A)(x,y:A)Eq A (op x y) (op y x)];
+	no, can't do a meta - unless in other universe?
+
+> Claim plus_commutes : (m,n:Nat) Eq Nat (plus m n) (plus n m);
+> Intros m n;
+> Refine E_Nat ([m:Nat]Eq Nat (plus m n) (plus n m));
+> 2 Refine Eq_sym ? ? ? (plus_zero n);
+> Intros x ih;
+> Refine Eq_trans;
+> 3 Refine succ (plus n x);
+> 2 Refine Eq_resp ? ? succ ? ? ih;
+	plus x (s y) -> s (p x y) rewrite.
+
+> [p = [z:Nat]Eq ? z (plus n (succ x))];
+> Refine Eq_subst Nat ? ? p (plus_succ n x);
+> Refine Eq_refl;
+> ReturnAll;
+
+> Claim plus_succ2 : (m,n:Nat)(Eq ? (plus (succ m) n) (succ (plus m n)));
+> Intros m n;
+> Refine Eq_subst ? (plus n (succ m)) (plus (succ m) n)
+>	[x:Nat](Eq Nat x (succ (plus m n)));
+> 2 Refine plus_commutes;
+> Refine Eq_subst ? (plus n m) (plus m n)
+>	[x:Nat](Eq Nat (plus n (succ m)) (succ x));
+> 2 Refine plus_commutes;
+> Refine plus_succ;
+> ReturnAll;
+
+> Claim plus_assoc:
+>  (m,n,p:Nat)(Eq ? (plus (plus m n) p) (plus m (plus n p)));
+> Claim plus_assoc_help :
+>  (m:Nat)(Pi ? [n:Nat](Pi ?
+>	[p:Nat](Eq ? (plus (plus m n) p) (plus m (plus n p)))));
+> Refine E_Nat [m:Nat](Pi ? [n:Nat](Pi ?
+>	[p:Nat](Eq ? (plus (plus m n) p) (plus m (plus n p)))));
+-- Base
+> 2 Refine La;
+> 2 Intros n;
+> Refine La;
+> Intros p;
+> Refine Eq_subst ? n (plus zero n)
+>		[x:Nat](Eq Nat (plus x p) (plus zero (plus n p)));
+> Refine Eq_refl;
+> Refine Eq_refl;
+> ReturnAll;
+-- IH
+> Intros m' ih_m';
+> Refine La;
+> Intros n;
+> Refine La;
+> Intros p;
+> Refine Eq_subst ? (succ (plus m' n)) (plus (succ m') n)
+>	[x:Nat](Eq Nat (plus x p) (plus (succ m') (plus n p)));
+> 2 Refine Eq_sym;
+> 2 Refine plus_succ2;
+> Refine Eq_subst ? (succ (plus (plus m' n) p))
+>		    (plus (succ (plus m' n)) p)
+>	[x:Nat](Eq Nat x (plus (succ m') (plus n p)));
+> 2 Refine plus_succ2;
+> Refine Eq_subst ? (succ (plus m' (plus n p))) (plus (succ m') (plus n p))
+>	[x:Nat](Eq Nat (succ (plus (plus m' n) p)) x);
+> 2 Refine plus_succ2;
+> Refine Eq_subst ? (plus (plus m' n) p) (plus m' (plus n p))
+>	[x:Nat](Eq Nat (succ (plus (plus m' n) p)) (succ x));
+> 2 Refine ap ? ? (ap ? ? ih_m' n) p;
+> Refine Eq_refl;
+> ReturnAll;

@@ -1,0 +1,13 @@
+
+what other classes would be useful? 
+
+PRINCIPLE - name control - get the std functions via this abstraction
+
+ie, just one leq, with implicit param...
+
+can infer new dictionaries by lifting dictionaries over structures.
+(eg Ord A -> Ord (List A))
+
+this could also be a good way to organise the generalisation - esp with
+proofs? 
+

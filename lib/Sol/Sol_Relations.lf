@@ -1,0 +1,188 @@
+> module Sol_Relations where;
+
+Definitions and theorems for Binary Relations.
+
+> import Sol;
+> import Pi;
+> import Function;
+
+> import Sol_AndOr;
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Q: How to define Rel? 
+
+Most general idea - of two things being linked in a Prop.
+
+Would like to define as low level as possible, since this simplifies the 
+proofs, and in general we can get the proof at a higher level by a suitable 
+coercion.
+
+Basically, can either represent it as a DP, or as a Pi type. 
+(see end of file for failed attempts.)
+
+In this lib, everything is done as a DP, and then a coercion Rel_to_DP is
+used to obtain results in the Pi type.
+
+> [ Rel = [A:Type] Pi_ A (Pi_ A Prop) ];
+
+> [ Rel_to_DP 
+>       = [T:Type][R:Rel T][x,y:T]ap_ T Prop (ap_ T (Pi_ T Prop) R x) y
+>       : (T:Type)(R:Rel T)(x,y:T)Prop ];
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Basic Propositions on Relations - The DP coding 
+
+> [ c_Refl = [T : Type][R : T -> T -> Prop]{x:T}R x x 
+>          : (T : Type)(R : T -> T -> Prop)Prop ];
+
+Can get a DP Rel by explicitly writing its kind.
+
+
+> [ c_Sym  = [T : Type][R : T -> T -> Prop]{x:T}{y:T}R x y => R y x 
+>          : (T : Type)(R : T -> T -> Prop)Prop ];
+
+> [ c_Trans 
+>    = [T : Type][R : T -> T -> Prop] {x:T}{y:T}{z:T}R x y => (R y z => R x z)
+>    : (T : Type)(R : T -> T -> Prop) Prop ];
+
+-----------------------
+
+> [ c_PER
+>    = [T : Type][R : T -> T -> Prop]and (c_Sym T R) (c_Trans T R)
+>    : (T : Type)(R : T -> T -> Prop) Prop ];
+
+> [ c_PreOrder
+>    = [T : Type][R : T -> T -> Prop]and (c_Refl T R) (c_Trans T R)
+>    : (T : Type)(R : T -> T -> Prop) Prop ];
+ 
+> [ c_EqRel
+>    = [T : Type][R : T -> T -> Prop]and (c_Refl T R) (c_PER T R)
+>    : (T : Type)(R : T -> T -> Prop) Prop ];
+
+
+
+
+
+-------------------------
+`c_Resp'
+  - general form of relatedness.
+  - (alternative is to make arg type of the rel. polymorphic, but this is
+     sometimes too restrictive, eg if we want to use this with Eq_Bool)
+
+> [ c_Resp 
+>    = [S,T:Type][f:S->T][R_S:S->S->Prop][R_T:T->T->Prop][t,u:S] 
+>													R_S t u => R_T (f t) (f u)
+>    : (S,T:Type)(f:S->T)(R_S:S->S->Prop)(R_T:T->T->Prop)(t,u:S) Prop ];
+
+---
+`c_Resp_same' 
+  - version of above where function is (T -> T)
+
+> [ c_Resp_same 
+>    = [T:Type][f:T->T][R:T->T->Prop] c_Resp T T f R R ];
+
+
+---
+old version.
+
+> [ c_Resp2
+>    = [T,S,U:Type][f:T->U->S][R:(X:Type)X->X->Prop][t,t':T][u,u':U]
+>					           R T t t' => (R U u u' => R S (f t u) (f t' u'))
+>    : (T,S,U:Type)(f:T->U->S)(R:(X:Type)X->X->Prop)(t,t':T)(u,u':U) Prop ];
+
+
+-----------------------
+Derived Propositions on Relations.
+
+Anti-symmetry - but requires equality! 
+
+Irreflexive
+
+Separating.
+
+any others? 
+
+
+-----------------
+
+
+
+
+-------------
+
+TRY TO DERIVE FROM ABOVE? 
+
+
+IMPORTANT - document defs with types!!!! 
+
+
+
+> Claim binary_pi_to_DP : (A:Type)(B:A -> Type)(C: (a:A) B a -> Type) Pi A ([a:A]Pi (B a) (C a)) -> (a:A) (b:B a) C a b;
+> Intros A B C pi_abc a b;
+> [bc = ap ? ? pi_abc a];
+> Refine ap ? ? bc b;
+> ReturnAll;
+
+Can now get Pi versions of the conditions 
+
+> [ c_Refl_Pi [T:Type][R:Rel T] = c_Refl T (Rel_to_DP T R) ];
+> [ c_Sym_Pi = [T:Type][R:Rel T] c_Sym T (Rel_to_DP T R) ];
+> [ c_Trans_Pi = [T:Type][R:Rel T] c_Trans T (Rel_to_DP T R) ];
+
+> [ c_EqRel_Pi = [T:Type][R:Rel T] c_EqRel T (Rel_to_DP T R) ];
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---
+IS THIS USEFUL HERE? 
+
+defn  respect = ... : {T,S|SET}(T->S)->({X|SET}X->X->Prop)->Prop
+defn  respect2 = ... : {T,S,U|SET}(T->U->S)->({X|SET}X->X->Prop)->Prop
+
+---
+
+NOW - some basic theorems? 
+
+
+
+
+---------------------------------------
+
+l0
+APPENDIX: Failed Ways to Define Rel.
+
+
+> [ Rel_k = (A:Type)(a,b:A)Prop ];
+	NOT THIS: because we can't apply a kind
+
+> &F [ Rel_k2 = (A:Type)[a,b:A]Prop ];
+	NOT THIS: can't have DP as body of a kind.  
+
+> &F [ Rel_k3 = [A:Type](a,b:A)Prop ];
+	AND NOT THIS - can't have a kind as a FO body.
+
+> [ Rel_fo = [A:Type][a,b:A]Prop ];
+> &F [A:Type][r:Rel_fo A]r;
+	NOT THIS: because (Rel A) is not WF as an argument.
+
+> &F [ Rel = [A:Type]{a,b:A}Prop ];
+	NOR THIS: since Prop is not a Prop. 

@@ -1,0 +1,8 @@
+> module BinTree where
+
+
+> Inductive 
+>	[A:Type][BinTree:Type]
+>   Constructors 
+>	[leaf:BinTree]
+>	[branch:(x:El A)(l:BinTree)(r:BinTree)BinTree]

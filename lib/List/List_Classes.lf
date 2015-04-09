@@ -1,0 +1,99 @@
+> module List_Classes where;
+
+dictionary stuff.
+
+> import List;
+> import ListFns;
+> import List_theorems;
+
+> import Eq;
+> import Ord;
+
+---
+
+> Claim eq_cons : (A:Type^0)(a,b:T^0 A)(as,bs:T^0 (List_0 A)) Eq ? a b -> Eq ? as bs -> Eq ? (cons ? a as) (cons ? b bs);
+> Intros A a b as bs eq_ab eq_asbs;
+> [p = ([n:T^0 A]Eq_Type^0 (List_0 A) (cons (T^0 A) a as) (cons (T^0 A) n bs))];
+> Refine Eq_subst ? ? ? eq_ab p; 
+> [q = ([ns:T^0 (List_0 A)]Eq_Type^0 (List_0 A) (cons (T^0 A) a as) (cons (T^0 A)a ns))];
+> Refine Eq_subst ? ? ? eq_asbs q;
+> Refine Eq_refl;
+> ReturnAll;
+
+---
+
+lemma.
+
+would like to have this in scope of dict proof, but would need changes
+to metavar/intros mechanism - THE PROOF MODE NEEDS MORE WORK! 
+
+> Claim list_cmp_eq : (A:Type) D_Eq A -> List A -> List A -> Bool;
+> Intros A d as;
+> Refine ap_;
+> Refine E_List A ([_:List A]List A ==> Bool) ?base ?step as;
+> 2 Refine La_ ? ? is_nil;
+> Intros a as fn; 
+> Refine La_;
+> Refine E_List A ([_:List A]Bool) ?base ?step; 
+> base1 Refine false;
+> Intros b bs _;
+> Refine And (eq A d a b) (ap_ ? ? fn bs);
+> -- Refine if (eq A d a b) ?yes ?no; 
+> -- no Refine false;
+> -- Refine ap_ ? ? fn bs;
+> ReturnAll;
+
+---
+JUST ASSUME FOR NOW.
+
+> Claim list_cmp_eq_EqRel 
+>       : (A:Type)(d:D_Eq A) 
+>          Prf (c_EqRel (List A) (BoolRel_to_Rel (List A) (list_cmp_eq A d)));
+
+
+> Claim List_liftEq : (A:Type) D_Eq A -> D_Eq (List A);
+> Intros A d;
+> Refine d_eq ? (list_cmp_eq ? d);
+> Refine list_cmp_eq_EqRel;
+> ReturnAll;
+
+
+> Coercion Parameters [A:Type] = List_liftEq A : D_Eq A -> D_Eq (List A);
+
+
+-----
+
+> Claim list_cmp_leq : (A:Type) D_Ord A -> List A -> List A -> Bool;
+> Intros A d;
+> Refine ap2_;
+> Refine La_;
+> Refine E_List A ([_:List A]List A ==> Bool) ?base ?; 
+> base Refine La_ ? ? ([_:List A]true);		-- as nil, bs not.
+> Intros a as fn_as;
+> Refine La_;
+> Refine E_List A ([_:List A]Bool) ?base ?; 
+> base1 Refine false;
+> Intros b bs _;
+> Refine if (eq A d a b) ? ?if_eq ?not_eq;
+> not_eq Refine leq A d a b;
+> if_eq Refine ap_ ? ? fn_as bs;
+> ReturnAll;
+
+
+---
+
+> Claim list_cmp_leq_PreOrder
+>       : (A:Type)(d:D_Ord A) 
+>         Prf (c_PreOrder (List A) (BoolRel_to_Rel (List A) (list_cmp_leq A d)));
+
+
+> Claim List_liftOrd : (A:Type) D_Ord A -> D_Ord (List A);
+> Intros A d;
+> Refine d_ord ? (list_cmp_leq ? d);
+> 2 Refine List_liftEq A d;
+> Refine list_cmp_leq_PreOrder;
+> ReturnAll;
+
+
+> Coercion Parameters [A:Type] = List_liftOrd A : D_Ord A -> D_Ord (List A);
+

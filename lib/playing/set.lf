@@ -1,0 +1,23 @@
+> import logic;
+
+> [seteq = [tau : U] [A,B : Set (T tau)]
+>          all tau [x : T tau] iff (in (T tau) x A) (in (T tau) x B)];
+> [Seteq = [tau : Type] [A,B : Set tau]
+>          All tau [x : tau] Iff (V (in tau x A)) (V (in tau x B))];
+
+> [sub = [tau : U] [A,B : Set (T tau)]
+>          all tau [x : T tau] imp (in (T tau) x A) (in (T tau) x B)];
+> [Sub = [tau : Type] [A, B : Set tau]
+>          All tau [x : tau] Imp (V (in tau x A)) (V (in tau x B))];
+
+> [disjoint = [tau : U] [A,B : Set (T tau)]
+>          all tau [x : T tau] imp (in (T tau) x A) (not (in (T tau) x B))];
+> [Disjoint = [tau : Type] [A,B : Set tau]
+>          All tau [x : tau] Imp (V (in tau x A)) (Not (V (in tau x B)))];
+
+> [empty = [tau : Type] set tau [x : tau] false];
+
+> Claim empty_sub : (tau : Type) (A : Set tau) Sub tau (empty tau) A;
+> Expand Sub;
+> Intros tau A;
+> Refine AllI;

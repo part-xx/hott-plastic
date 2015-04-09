@@ -1,0 +1,71 @@
+> module Monads where;
+
+
+THIS IS AN INVALID SCHEMA
+ 
+DO WE NEED UNIVERSES HERE?
+  
+
+
+-------------------------------
+
+IDEA: represent "dictionary" as a tuple of the necessary stuff.
+
+TO DO: include a functor entry
+
+> Inductive 
+>	[A,B:Type][M:Type->Type][D_Monad : Type]
+>	Constructors
+>	[ d_monad : (r:(a:El A)El (M A))
+>	            (b:(ma:El (M A)) (k : (r:El A)El (M B)) El (M B))
+>	            D_Monad];
+
+NOTE: not very usable if always need to specify B. 
+	otherwise, could try using universes for these things!!! 
+
+(IGNORE THIS FOR NOW.)
+
+
+> Claim return : (M:Type->Type) D_Monad M -> (A:Type)(a:A)M A;
+> Intros M d; 
+> Intros A a; 
+> E_D_Monad;
+> [ref = E_D_Monad M ([_:D_Monad M]M A) ? d];
+> Intros r b;
+> Refine r A a;
+> ReturnAll;
+> Refine ref;
+> ReturnAll;
+> return;
+
+
+> Claim bind : (M:Type -> Type) D_Monad M -> (A,B:Type)M A -> (A -> M B) -> M B;
+> Intros M d;
+> Intros A B;
+> Intros ma k;
+> [ref = E_D_Monad M ([_:D_Monad M]M B) ? d];
+> Intros r b;
+> Refine b A B ma k;
+> ReturnAll;
+> Refine ref;
+> ReturnAll;
+> bind;
+
+
+NOW: what about user syntax??? 
+
+
+-------------------------------------
+
+
+ONE: trying an inductive family def - what is this type? 
+
+> Inductive
+>	[Monad1 : (T:Type)Type]
+>	Constructors
+>	[ return1 : (A:Type)(a:A)Monad1 A]
+>	[ bind1 : (A,B:Type)(ma:Monad1 A)(f:(x:A)Monad1 B) Monad1 B ];
+
+does it represent (type) logic of monad expressions?
+
+

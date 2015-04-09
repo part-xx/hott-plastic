@@ -1,0 +1,11 @@
+
+DISCUSSION ON HOW TO REPRESENT.
+ * opt for representing in-language version, and using theorems to lift it.
+    * name c_X is the condition,
+    * name p_X is the proof of it.
+	* name f_X is DP-level version of it.
+
+NB this could be an interesting case for coercions?  
+
+or not possible, since meta meta? 
+

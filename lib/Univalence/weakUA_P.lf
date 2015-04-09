@@ -1,0 +1,7 @@
+> module UnivalenceAx where;
+
+> import Fol;
+> import Function;
+
+> [is_linv = [A, B : Type] [f : A ==> B] [g : B ==> A] All A ([x:A]Eq A (ap_ B A g (ap_ A B f x)) x)];
+> [is_equiv : (A, B : Type) (f : A ==> B)  Exists (B ==> A) ([g : B ==> A](is_linv A B f g) /\ (is_linv B A g f))];

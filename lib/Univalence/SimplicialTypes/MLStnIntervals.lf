@@ -1,0 +1,25 @@
+> module MLStnIntervals where;
+
+> import UniverseIntro;
+
+> Claim Stn : (n : Nat)Type^0;
+
+> Refine E_Nat [n:Nat](Type^0);
+> Intros i Stn_i;
+> Refine Either_Type^0 Stn_i Unit_Type^0;
+> ReturnAll;
+> Refine Unit_Type^0;
+> ReturnAll;
+
+ import Vec;
+
+
+ Claim StnVec : (n : Nat) Vec Nat (succ n);
+
+ Refine E_Nat [n:Nat](Vec Nat (succ n));
+ Intros n ih;
+ Refine vcons Nat (succ n) (succ n) ih;
+ ReturnAll;
+ Refine vcons Nat zero zero vnil;
+ ReturnAll;
+

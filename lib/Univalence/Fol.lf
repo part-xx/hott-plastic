@@ -1,0 +1,40 @@
+> module Fol where;
+
+Equality relation
+
+ [Eq : (A : Type) A -> A -> Prop];
+ [EqI : (A : Type) (a : A) Eq A a a];
+ [EqE : (A : Type) (P : A -> Prop) (a, b : A) Eq A a b -> P a -> P b];
+-- [(~) = Eq];
+
+Propositional operations
+
+> [False : Prop];
+> [FalseE : (P : Prop) False -> P];
+
+> [Imp : Prop -> Prop -> Prop];
+> [ImpI : (P, Q : Prop) (P -> Q) -> Imp P Q];
+> [ImpE : (P, Q : Prop) Imp P Q -> P -> Q];
+
+> [And : Prop -> Prop -> Prop];
+> [AndI : (P, Q : Prop) P -> Q -> And P Q];
+> [AndE_L : (P, Q : Prop) And P Q -> P];
+> [AndE_R : (P, Q : Prop) And P Q -> Q];
+> [(/\) = And];
+
+> [Or : Prop -> Prop -> Prop];
+> [OrI_L : (P, Q : Prop) P -> Or P Q];
+> [OrI_R : (P, Q : Prop) Q -> Or P Q];
+> [OrE : (P, Q, R : Prop) (P -> R) -> (Q -> R) -> (Or P Q -> R)];
+
+> [Not = (P : Prop) Imp P False];
+
+Quantifiers
+
+> [All : (A : Type) (A -> Prop) -> Prop];
+> [AllI : (A : Type) (P : A -> Prop) (x : A) P x -> All A P];
+> [AllE : (A : Type) (P : A -> Prop) (a : A) All A P -> P a];
+
+> [Exists : (A : Type) (A -> Prop) -> Prop];
+> [ExistsI : (A : Type) (P : A -> Prop) (a : A) P a -> Exists A P];
+> [ExistsE : (A : Type) (P : A -> Prop) (Q : Prop) ((x : A) P x -> Q) -> Exists A P -> Q];

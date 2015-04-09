@@ -1,0 +1,11 @@
+> module ML_TypesEq where;
+
+> Inductive 
+>	[A : Type][Id_T : (B:Type)Type]
+>	Constructors
+>	[Id_T_refl : Id_T A];
+
+ [Id_T : (A : Type) (B : Type) Type];
+ [Id_T_refl : (A : Type)Id_T A A];
+ [E_Id_T : (C : (A : Type)(B : Type)(p : Id_T A B)Type)((A : Type)C A A (Id_T_refl A)) -> (A : Type)(B : Type)(p : Id_T A B) C A B p];
+

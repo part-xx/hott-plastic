@@ -1,0 +1,18 @@
+> module ListNat where;
+
+> import ListFns;
+> import Nat_arith;
+
+
+@ sum of a list of nat.
+ 
+> Claim sum : (l:List Nat)Nat;
+> Refine foldr ? ? plus zero; 
+> ReturnAll;
+
+----
+
+
+add prod too? 
+ 
+

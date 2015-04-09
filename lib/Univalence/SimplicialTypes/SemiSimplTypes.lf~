@@ -1,0 +1,83 @@
+> module SemiSimplTypes where;
+
+> import Nat;
+> import Sigma;
+> import TypeN;
+> import Function;
+> import FunctionN;
+> import Pi;
+
+> import Abbrev;
+> import Delta;
+ import Fol;
+> import LogicalEq;
+
+
+> [T = Sigma ? ([SST:Type^1] Sigma ? ([bnd:(T^1 SST)==>(Nat==>Type^1)]
+>              Pi3 ? ? ? ([x:El (T^1 SST)][k:Nat][m:Nat]
+>              Pi ? ([f:El (Delta k m)]
+>              T^1 (ap2_ ? ? ? bnd x m) ==> T^1 (ap2_ ? ? ? bnd x k) )))) ];
+
+> [SST_pr = [t:T]T^1 (pi1 ? ? t)];
+> [bnd_pr = [t:T][x:(SST_pr t)][n:Nat] (ap2_ ? ? ? (pi1 ? ? (pi2 ? ? t)) x n)];
+> [rest_pr = [t:T][x:(SST_pr t)][k:Nat][m:Nat][f:El (Delta k m)][y:El (T^1 (bnd_pr t x m))]
+>            ap_ ? ? (ap ? ? (ap3 ? ? ? ? (pi2 ? ? (pi2 ? ? t)) x k m) f) y];
+
+> [Ptxklmfgy [t:T][x:(SST_pr t)][k,l,m:Nat][f:Delta k l][g:Delta l m][y:T^1 (bnd_pr t x m)] = 
+>                Eq ? (rest_pr t x k m (fm_comp k l m f g) y) 
+>                 (rest_pr t x k l f (rest_pr t x l m g y))];
+> [Ptxklmfg [t:T][x:(SST_pr t)][k,l,m:Nat][f:Delta k l][g:Delta l m] = All_T ? ([y:(T^1 (bnd_pr t x m))] 
+>               Ptxklmfgy t x k l m f g y)];
+> [Ptxklmf [t:T][x:(SST_pr t)][k,l,m:Nat][f:Delta k l] = All_T ? ([g:Delta l m]Ptxklmfg t x k l m f g)];
+> [Ptxklm [t:T][x:(SST_pr t)][k,l,m:Nat] = All_T ? ([f:Delta k l]Ptxklmf t x k l m f)];
+> [Ptx [t:T][x:(SST_pr t)] = AllNat3 ([k,l,m:Nat]Ptxklm t x k l m)];
+> [P [t:T] = All_T ? ([x:(SST_pr t)]Ptx t x)];
+
+ [P = [t:T] All_T ? ([x:(SST_pr t)]
+            AllNat3 ([k,l,m:Nat]
+            All_T ? ([f:El (Delta k l)] All_T ? ([g:El (Delta l m)]
+            All_T ? ([y:(T^1 (bnd_pr t x m))]
+            Eq ? (rest_pr t x k m (fm_comp k l m f g) y) 
+                 (rest_pr t x k l f (rest_pr t x l m g y)))))))];
+
+> [rest_fty = [t:T][x:(SST_pr t)][k,l,m:Nat][f:Delta k l][g:Delta l m][y:T^1 (bnd_pr t x m)][p : P t]
+>          AllE_T ? ([y_:(T^1 (bnd_pr t x m))]Ptxklmfgy t x k l m f g y_) y
+>          (AllE_T ? ([g_:El (Delta l m)]Ptxklmfg t x k l m f g_) g (AllE_T ? ([f_:El (Delta k l)]Ptxklmf t x k l m f_) f
+>          (AllNat3E ([k_,l_,m_:Nat]Ptxklm t x k_ l_ m_) (AllE_T ? ([x_:SST_pr t]Ptx t x_) x p) k l m)))];
+
+> Claim ih_T : (n : Nat)(t : T)(p : (P t))T;
+> Intros n t p;
+> Refine (sigma ? ? ?SST_nxt ?bnd_and_rest);
+> [cell_bnd [x:(SST_pr t)] = (bnd_pr t x (succ n))];
+> [TypeOfFills [x:(SST_pr t)] = Pi__1 (cell_bnd x) type^0];
+> SST_nxt Refine (Sigma_Type^1 ? TypeOfFills);
+> bnd_and_rest Refine (sigma ? ? ?bnd_nxt ?rest_nxt);
+
+> [sst_ntr [sst_nxt:T^1 SST_nxt] = pi1 ? ? sst_nxt];
+> [Fill [sst_nxt:T^1 SST_nxt] = pi2 ? ? sst_nxt];
+> [TypeOfAug [sst_nxt:T^1 SST_nxt][m:Nat][y:T^1 (bnd_pr t (sst_ntr sst_nxt) m)] =
+>             t^1 (Pi_Type^0 ? ([f:T^0 (Delta_0 (succ n) m)]
+>                               ap_ ? ? (Fill sst_nxt) (rest_pr t (sst_ntr sst_nxt) (succ n) m f y)))];
+> bnd_nxt Refine (La2_ ? ? ? ([sst_nxt:T^1 SST_nxt][m:Nat]
+>             Sigma_Type^1 ? ([y:T^1 (bnd_pr t (sst_ntr sst_nxt) m)]
+>                              TypeOfAug sst_nxt m y)));
+
+ [bnd_ntr [sst_nxt:T^1 SST_nxt][m:Nat][y:T^1(ap2_ ? ? ? bnd_nxt sst_nxt m)] = pi1 ? ? y];
+> [aug [sst_nxt:T^1 SST_nxt][m:Nat][y:T^1(ap2_ ? ? ? bnd_nxt sst_nxt m)] = pi2 ? ? y];
+> [rest_subst [sst_nxt:El (T^1 SST_nxt)][k:Nat][m:Nat][f:El (Delta k m)]
+>             [y : T^1(ap2_ ? ? ? bnd_nxt sst_nxt m)][h:El (Delta (succ n) k)]=
+>                  subst ? ([x:T^1 (cell_bnd (sst_ntr sst_nxt))]T^0 (ap_ ? ? (Fill sst_nxt) x)) 
+>                          (rest_pr t (sst_ntr sst_nxt) (succ n) m (fm_comp (succ n) k m h f) (pi1 ? ? y))
+>                          (rest_pr t (sst_ntr sst_nxt) (succ n) k h (rest_pr t (sst_ntr sst_nxt) k m f (pi1 ? ? y)))
+>                          (rest_fty t (sst_ntr sst_nxt) (succ n) k m h f (pi1 ? ? y) p)
+>                          (ap ? ? (aug sst_nxt m y) (fm_comp (succ n) k m h f)) ];
+
+ rest_nxt Refine
+> [var_ = (La3 ? ? ? ? ([sst_nxt:El (T^1 SST_nxt)][k:Nat][m:Nat]
+>              La ? ? ([f:El (Delta k m)]La_ ? ? ([y : T^1(ap2_ ? ? ? bnd_nxt sst_nxt m)]
+>              sigma ? ([bnd_n_k : El (T^1 (bnd_pr t (sst_ntr sst_nxt) k))]Nat)
+ T^1 (TypeOfAug sst_nxt k bnd_n_k)) 
+>                       (rest_pr t (sst_ntr sst_nxt) k m f (pi1 ? ? y)) k)))];
+                       (La ? ? ([h:El (Delta (succ n) k)]
+                                 rest_subst sst_nxt k m f y h))))))];
+

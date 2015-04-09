@@ -1,0 +1,17 @@
+> module PiFnCoercion where;
+
+the non-dependent function type and a coercion from these to Pi.
+
+> import Function;
+> import Pi;
+
+> Claim fn_to_pi : (A,B:Type) (_ : Pi_ A B) Pi A ([_:A]B);
+> Intros A B fn;
+> Refine La;
+> Refine ap_ ? ? fn;
+> ReturnAll;
+
+> Coercion 
+>    Parameters [A,B:Type] 
+>     = fn_to_pi A B : (_ : Pi_ A B) Pi A ([_:A]B);
+

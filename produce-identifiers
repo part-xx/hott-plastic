@@ -1,0 +1,19 @@
+#! /usr/local/perl/bin/perl -w
+
+$build_tag = shift;
+$compiler  = shift;
+$date = `date`;
+chomp $date;
+
+open FILE, "> identifiers.c" || die "problem $!\n";
+
+print FILE <<"EOP";
+#include <stdio.h>
+void print_info () {
+	puts("BUILD DATE = $date");
+	puts("BUILD INFO = $build_tag");
+	puts("COMPILER   = $compiler");
+	fflush(stdout);
+}
+EOP
+close FILE;

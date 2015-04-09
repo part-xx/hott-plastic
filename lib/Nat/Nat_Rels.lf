@@ -1,0 +1,10 @@
+> module Nat_Rels where;
+
+Rels for Nat
+
+> import Nat;
+> import Eq;
+> import Ord;
+
+plan - to import the equality and leq, plus have some theorems.
+

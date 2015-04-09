@@ -1,0 +1,30 @@
+> module Vec_sort where;
+
+Sorting on vectors
+
+> import Vec;
+> import Ord;
+> import BoolFns;
+
+> Claim vec_insert : (A:Type) D_Ord A -> (n:Nat)(x:A) Vec A n -> Vec A (succ n);
+> Intros A d n x;
+> [leq_ = leq A d];		-- this defn needs to go before def of metavar.
+> Refine E_Vec A ([n:Nat][_:Vec A n]Vec A (succ n)) ;
+> 2 Refine vcons ? ? x (vnil A);
+> Intros n_ y ys r_ys;
+> Refine if (leq A d x y) ? ?is_leq ?not_leq;
+> is_leq Refine vcons ? ? x (vcons ? ? y ys);
+> not_leq Refine vcons ? ? y r_ys;
+> ReturnAll;
+
+
+> Claim vec_sort : (A:Type) D_Ord A -> (n:Nat) Vec A n -> Vec A n;
+> Intros A d n;
+> Refine E_Vec A ([n:Nat][v:Vec A n]Vec A n);
+> 2 Refine vnil;
+> Intros m x _ r_xs;
+> Refine vec_insert A d m x r_xs;
+> ReturnAll;
+
+
+

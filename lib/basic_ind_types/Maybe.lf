@@ -1,0 +1,30 @@
+> module Maybe where;
+
+<> import Monads;
+
+> Inductive 
+>	[A:Type][Maybe:Type]
+>	Constructors
+>	[Nothing : Maybe]
+>	[Just : (a:El A)Maybe];
+
+> Claim maybe : (A,B:Type) B -> (A->B) -> Maybe A -> B;
+> Intros A B nothing just_fn; 
+> Refine E_Maybe ? ([_:Maybe A]B);
+> 2 Refine nothing;
+> Intros a;
+> Refine just_fn a;
+> ReturnAll;
+> maybe;
+
+
+<> Claim monad_Maybe : D_Monad Maybe;
+<> Refine d_monad;
+
+<> 2 Refine [A:Type]Just A;		-- nice to say, (Just ?)
+
+<> Intros A B ma k;
+<> Refine maybe ? ? (Nothing ?) k ma;	
+<> ReturnAll;
+<> monad_Maybe;
+

@@ -1,0 +1,11 @@
+
+> module TypeN where
+
+ import Sol		-- needed, since Type^0 uses Prop. 
+
+@ declare Type^i
+
+> InfiniteUniverse {prop=Prop,c} d e
+
+actual names are pre-set.
+

@@ -1,0 +1,26 @@
+> module Circle where;
+
+> import ML_Equality;
+> import Nat;
+
+> [Circle : Type];
+
+> [base : Circle];
+> [loop : Id_ ? base base];
+
+> [CircRec : (A:Type)(a:A)(l:Id_ ? a a)Circle->A];
+
+> SimpleElimRule Circle CircRec 4
+>          [base 0 
+>                  = [A:Type]
+>                    [a:A]
+>                    [l:Id_ A a a]
+>                    a 
+>                  : (A:Type)
+>                    (a:A)
+>                    (_:Id_ A a a)
+>                    A];
+
+ [CircPathElim : (A:Type)(a:A)(l:Id_ ? a a)Id_ ? ()];
+
+> Normal (CircRec Nat zero (Idr Nat zero) base);

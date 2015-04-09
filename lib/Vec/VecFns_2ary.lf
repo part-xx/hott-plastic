@@ -1,0 +1,93 @@
+> module VecFns_2ary where;
+
+2ary vector fns 
+
+> import VecFns;
+> import ML_Equality;
+> import Nat_plus_theorems;
+> import Pair;
+
+---
+
+TRY - DBL-ind fn? 
+
+look like what?
+
+---
+
+
+> Claim vec_zip_nat : (A,B:Type)(n:Nat) Vec A n -> Vec B n -> Vec (Pair A B) n;
+> Intros A B n; 
+> Refine ap2_;
+
+> Refine E_Nat ([n:Nat] Vec A n ==> Vec B n ==> Vec (Pair A B) n) ?base ?step n;
+> base Refine La2_ ? ? ? ([_:Vec A zero][_:Vec B zero]vnil (Pair A B));
+> Intros n_ f_;
+> Refine La2_; 
+> Intros as bs;
+> Refine vcons;
+> 2 Refine pair ? ? (vhead ? ? as) (vhead ? ? bs);
+> Refine ap2_ ? ? ? f_;
+> 2 Refine vtail ? ? as;
+> Refine vtail ? ? bs;
+> ReturnAll;
+
+
+----
+
+now induct on vectors.
+
+> Claim vec_zip : (A,B:Type)(n:Nat) Vec A n -> Vec B n -> Vec (Pair A B) n;
+> Intros A B n; 
+> Refine ap2_;
+> Refine La_;
+> Refine E_Vec ? ([n:Nat][_:Vec A n] Vec B n ==> Vec (Pair A B) n);
+> 2 Refine La_;
+> 2 Intros _;
+> Refine vnil;
+> Return;
+> Intros m a as_ bs_ps; 
+> Refine La_;
+> Intros bs;
+> Refine vcons;
+> 2 Refine pair ? ? a (vhead ? ? bs);
+> Refine ap_ ? ? bs_ps (vtail ? ? bs);
+> ReturnAll;
+
+
+TESTS
+<> [A,B:Type][a1,a2:A][b1,b2:B];
+<> vec_zip_nat ? ? ? (vcons ? ?  a1 (vcons ? ? a2 vnil))
+<>                   (vcons ? ?  b1 (vcons ? ? b2 vnil))
+<>     = vcons ? ? (pair ? ? a1 b1) (vcons ? ? (pair ? ? a2 b2) vnil);
+
+<> vec_zip ? ? ? (vcons ? ?  a1 (vcons ? ? a2 vnil))
+<>               (vcons ? ?  b1 (vcons ? ? b2 vnil))
+<>     = vcons ? ? (pair ? ? a1 b1) (vcons ? ? (pair ? ? a2 b2) vnil);
+<> Forget A;
+
+---
+
+> Claim unzip_vec : (A,B:Type)(n:Nat) 
+>                   Vec (Pair A B) n -> Pair (Vec A n) (Vec B n);
+> Intros _ _ _; 
+> Refine E_Vec ? ([n:Nat][_:Vec (Pair A B) n]Pair (Vec A n) (Vec B n));
+> 2 Refine pair ? ? vnil vnil;
+> Intros m ab _ as_bs;
+> Refine pair; 
+> Refine vcons ? ? (right ? ? ab) (right ? ? as_bs);
+> Refine vcons ? ? (left ? ? ab)  (left ? ? as_bs);
+> ReturnAll;
+
+
+---
+
+being lazy
+
+> Claim vec_zipwith 
+>   : (A,B,C:Type)(f:A -> B -> C)(n:Nat) Vec A n -> Vec B n -> Vec C n;
+> Intros _ _ _ f _;
+> Intros as bs; 
+> Refine vec_map ? ? (uncurry ? ? ? f);
+> Refine vec_zip ? ? ? as bs;
+> ReturnAll;

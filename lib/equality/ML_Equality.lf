@@ -1,0 +1,72 @@
+> module ML_Equality where;
+
+Martin-Loef inductive equality.
+	(NB emacs doesn't like latex symbol for "oe" !)
+
+> import Function;
+> import Pi;		-- for inductions.
+
+> Inductive 
+>	[A:Type][Id_ : (x:El A)(y:El A)Type]
+>	Constructors
+>	[Idr : (z:El A)Id_ z z];
+
+---
+
+> Claim Id_refl : (A:Type)(x:A)Id_ ? x x; 
+> Refine Idr;
+> ReturnAll;
+
+----
+
+<> [ c_sym : [A:Type] [R:A->A->Type] (x,y:A) R x y -> R y x ];
+	would like to write this.
+
+> Claim Id_sym : (A:Type)(x,y:A) (_ : Id_ ? x y) Id_ ? y x;
+> Intros _ _ _;
+> Refine E_Id_ ? ([x,y:A][_:Id_ A x y]Id_ A y x);
+> Refine Idr;
+> ReturnAll;
+
+
+------------------
+
+now need to elim over first Id hyp, meaning the conclusion must live in Type;
+hence we need to make it a (inductive type) Function.
+
+> Claim Id_trans : (A:Type)(x,y,z:A) (_ : Id_ A x y) (_ : Id_ ? y z) Id_ ? x z;
+	BUG: still doesn't like ? for A in every of the Id terms.
+	     but it is happy with all-but-one.
+> Intros _ _ _ _; 
+> Intros eq_xy;
+> Refine ap_ ? ? ?;
+> Refine E_Id_ A ([x,y:A][_:Id_ A x y]Pi_ (Id_ A y z) (Id_ A x z)) ? ? ? eq_xy;
+> Intros z1;
+> Refine Id;
+> ReturnAll;
+
+
+
+
+---------------------------------------
+
+
+
+> Claim Id_subst : (A:Type) (m,n:A) (P:(_:A)Type) (_ : Id_ ? m n) (_ : P m) P n;
+> Intros A m n P;
+> Intros eq_mn;
+> Refine ap_;
+> Refine E_Id_ A ([x,y:A][_:Id_ A x y]P x ==> P y) ? ? ? eq_mn;
+> Intros _;
+> Refine Id;
+> ReturnAll;
+
+
+-------------------------
+
+> Claim Id_resp : (A,B:Type)(f:(_:A)B)(x,y:A)(_ : Id_ A x y) Id_ B (f x) (f y);
+> Intros _ _ _ _ _; 
+> Refine E_Id_ ? ([x,y:A][_:Id_ A x y]Id_ B (f x) (f y));
+> Intros z;
+> Refine Idr;
+> ReturnAll;

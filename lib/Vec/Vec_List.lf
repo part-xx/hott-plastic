@@ -1,0 +1,58 @@
+> module Vec_List where;
+
+> import Vec;
+> import List;
+> import ListFns;
+
+> Claim vl : (A:Type) (n:Nat) Vec A n -> List A;
+> Intros A n; 
+> Refine E_Vec ? ([m:?][_:Vec A m]List A) ?bc ? ;
+> bc Refine nil;
+> Intros m x v l;
+> -- Refine append ? l (singleton ? x); 
+> Refine cons ? x l; 
+> ReturnAll;
+
+QQ: should the list be reversed? 
+
+----------
+
+> Claim lv : (A:Type) (l : List A) Vec A (len ? l);
+> Intros A; 
+> Refine E_List ? ([m:List A]Vec A (len ? m)) ?bc ?;
+> bc Refine vnil;
+> Intros a _ v_;
+> -- Refine vcons A (len A l) a v_; 
+> Refine vcons ? ? a v_;
+
+BUG: problem with reduction. - sometimes arity isn't correct...
+
+> ReturnAll;
+
+@ Declaring coercions.
+
+> &E Coercion Parameters [A:Type]        = lv A   : (l:List A)Vec A (len A l);
+> &E Coercion Parameters [A:Type][n:Nat] = vl A n : Vec A n -> List A;
+
+
+__END__ 
+
+> [v1 = vcons ? ? zero (
+>       vcons ? ? (succ zero) (
+>       vcons ? ? (succ (succ zero)) (
+>       vnil Nat))) ];
+
+> Normal vl ? ? v1;
+
+> v1 = lv ? (vl ? ? v1);
+
+> Claim t1 : Vec ? ?;
+> Refine (lv ? v1);
+> t1;
+
+> Claim t2 : Vec ? ?; 
+> Refine vl ? ? v1;
+> t2;
+
+
+

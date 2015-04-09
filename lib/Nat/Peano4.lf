@@ -1,0 +1,39 @@
+> module Peano4 where;
+
+> import Sol;
+> import Nat;
+> import Pi;
+> import Function;
+
+> import Empty;
+
+> import ML_Equality;
+
+> import TypeN;
+> import Nat_TypeN;
+
+---
+
+
+
+> Claim peano4 : NOT (Eq Nat zero (succ zero));
+> Refine La_;
+> Intros H;
+> [f = E_Nat ([y:Nat]Type^0) Empty_Type^0 ([x:Nat][y:Type^0]Nat_Type^0)];
+> Equiv T^0 (f zero);
+> 
+> Refine Eq_subst ? ? ? ([n:Nat]T^0 (f n)) (Eq_sym ? ? ? H);
+> Refine zero;
+> ReturnAll;
+
+
+> Claim zero_not_succ : (n:Nat) NOT (Eq Nat zero (succ n));
+> Intros n;
+> Refine La_;
+> Intros H;
+> [f = E_Nat ([y:Nat]Type^0) Empty_Type^0 ([x:Nat][y:Type^0]Nat_Type^0)];
+> Equiv T^0 (f zero);
+> 
+> Refine Eq_subst ? ? ? ([n:Nat]T^0 (f n)) (Eq_sym ? ? ? H); 
+> Refine zero;
+> ReturnAll;

@@ -1,0 +1,17 @@
+> module Either where;
+
+> import TypeN;
+
+> Inductive 
+>	[A,B:Type][Either:Type]
+>   Constructors 
+>	[inl:(x:El A)Either]
+>	[inr:(y:El B)Either];
+
+> Claim either : (A,B,C:Type)(A->C) -> (B->C) -> Either A B -> C;
+> Intros A B C lf rf; 
+> Refine E_Either A B ([_:Either A B]C);
+> Immed;
+> ReturnAll;
+> either;
+

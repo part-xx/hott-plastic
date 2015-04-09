@@ -1,0 +1,243 @@
+> module BoolEq where; 
+
+> import BoolFns;
+> import MetaEq;
+> import Sol_Relations;
+
+> import BoolCoercion;
+
+----------------------------
+
+> Claim Eq_Bool : (x:Bool)(y:Bool)Bool;
+> Intros x;
+> Refine E_Bool ([b:Bool]Bool) x ?;
+> Refine Not x;
+> ReturnAll;
+
+
+Could also do with and & or, ie both true or both false.
+But the above is simpler
+
+Some tests
+
+<> true .Eq_Bool true = tautology ;
+<> true .Eq_Bool false = absurd;
+<> Normal true .Eq_Bool true; 
+<> &F true .Eq_Bool true = absurd;
+
+
+%---------------------------------------
+
+<> Claim Eq_Bool_refl : Prf (c_Refl Bool Eq_Bool);
+	CAN SAY THIS because of coercion, but for now be explicit.
+
+> Claim Eq_Bool_refl : Prf (c_Refl Bool (BoolRel_to_Rel ? Eq_Bool));
+> &F Refine LL[b:Bool]?;		-- would like, new syntax - with intros too?
+ 
+> Refine LL;
+> Intros b;
+> Refine E_Bool ([x:Bool]Prf(Eq_Bool x x));
+> Refine prf_tautology;
+> Refine prf_tautology;
+> ReturnAll;
+
+
+---
+
+Can do this more directly? 
+
+> [eqp = BoolRel_to_Rel ? Eq_Bool];
+
+> Claim Eq_Bool_sym : Prf (c_Sym Bool (BoolRel_to_Rel ? Eq_Bool));
+> Refine LL;
+> Refine E_Bool ([x:Bool]Prf ({y:Bool} eqp x y => eqp y x));
+> Refine LL;
+> Intros y;
+> Refine PropId;
+> Return;
+> Refine LL;
+> Intros y;
+> Refine E_Bool ([y:Bool]Prf (eqp true y => eqp y true));
+> Refine PropId;
+> Refine PropId;
+> ReturnAll;
+
+
+
+-----
+
+> Claim Eq_Bool_trans : Prf (c_Trans ? (BoolRel_to_Rel ? Eq_Bool));
+> Refine LL;
+> Refine E_Bool ([x:Bool]Prf({y:Bool}{z:Bool}eqp x y => (eqp y z => eqp x z)));
+> Refine LL;
+> Refine E_Bool ([y:Bool]Prf({z:Bool}eqp false y => (eqp y z => eqp false z)));
+> Refine LL;
+> Intros _;
+> Refine LL;
+> Intros _;
+> Refine PropId;
+> ReturnAll;
+> Refine LL;
+> Refine E_Bool ([z:Bool]Prf (eqp false true => (eqp true z => eqp false z)));
+> Refine LL;
+> Intros _;
+> Refine LL;
+> Intros _;
+> Refine prf_tautology;
+> ReturnAll;
+> Refine LL;
+> Intros eq_ft;
+> Refine LL; 
+> Intros _;
+> Refine eq_ft;
+> ReturnAll;
+
+> Refine LL;
+> Refine E_Bool ([y:Bool]Prf ({z:Bool} eqp true y => (eqp y z => eqp true z)));
+> Refine LL;
+> Refine E_Bool ([z:Bool]Prf (eqp true false => (eqp false z => eqp true z)));
+> Refine LL;
+> Intros eq_tf;
+> Refine LL;
+> Intros _;
+> Refine eq_tf;
+> ReturnAll;
+> Refine LL;
+> Intros _;
+> Refine LL;
+> Intros _;
+> Refine prf_tautology;
+> ReturnAll;
+> Refine LL;	-- check here
+> Refine E_Bool ([z:Bool]Prf (eqp true true => (eqp true z => eqp true z)));
+> Refine LL;
+> Intros _;
+> Refine PropId;
+> ReturnAll;
+> Refine LL;
+> Intros _;
+> Refine PropId;
+> ReturnAll;
+
+
+----
+
+
+> Claim Eq_Bool_EqRel : Prf (c_EqRel Bool (BoolRel_to_Rel ? Eq_Bool));
+> Refine f_pair;
+> Refine f_pair;
+> Immed;
+> ReturnAll;
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+OLD STUFF - still want it? 
+
+
+Proving subst of Eq_Bool
+
+<> c_Eq_subst;
+<> Claim subst_Eq_Bool : (m,n:Bool)Prf(c_Eq_subst Bool Eq_Bool m n);
+<> Intros m n;
+<> Refine E_Bool ([m:Bool]Prf(c_Eq_subst Bool Eq_Bool m n)) ? ? m;
+
+%-------------------
+m = FALSE case
+
+<> Refine E_Bool ([n:Bool]Prf (c_Eq_subst Bool Eq_Bool false n)) ? ? n;
+
+FALSE FALSE case
+<> Refine LL;
+<> Intros eq_ff;
+<> Refine LL;
+<> Intros P;
+
+<> Refine PropId;
+<> ReturnAll;
+
+FALSE TRUE case
+<> Refine LL;
+<> Intros eq_ft;
+<> Refine LL;
+<> Intros P;
+<> Refine LL;
+<> Intros p_f;
+
+<> Refine App ? ? (App ? ? E_absurd eq_ft) ;
+<> ReturnAll;
+
+
+%-------------------
+m = TRUE case
+
+<> Refine E_Bool ([n:Bool]Prf (c_Eq_subst Bool Eq_Bool true n)) ? ? n;
+
+TRUE FALSE case
+
+<> Refine LL;
+<> Intros eq_tf;
+<> Refine LL;
+<> Intros P;
+<> Refine LL;
+<> Intros p_t;
+<> Refine App ? ? (App ? ? E_absurd eq_tf);
+<> ReturnAll;
+
+
+TRUE TRUE case
+
+<> Refine LL;
+<> Intros eq_tt;
+<> Refine LL;
+<> Intros P;
+<> Refine PropId;
+<> ReturnAll;
+
+
+-------------------
+
+
+---------------------------
+
+<> Eq_Bool;
+<> c_Resp;
+<> Claim fb : (X:Type)X -> X -> Prop;
+<> Intros X a b;
+<> Cut [X=Bool];
+<> Refine Eq_Bool a b;
+<> &F Return fb;
+<> ReturnAll;		-- should report a serious fail here, since X can't be cut!
+<> Undo x6;
+
+UNSURE - it is ok to fix an X, perhaps. doesn't affect return type. Result is,
+ignoring the argument when it is re-bound?
+
+----------------
+
+
+<> Claim resp_Eq_Bool
+<>			 : (f:Bool->Bool)(x,y:Bool)Prf (c_Resp_same Bool f Eq_Bool x y);
+<> Intros f x y;
+<> Refine LL;
+<> Intros eq_xy;
+<> subst_Eq_Bool;
+
+<> [subst_xy = App ? ? (subst_Eq_Bool x y) eq_xy];
+
+<> [P = La_ ? ? ([z:Bool]Eq_Bool (f x) (f z))];
+
+<> [use_P = App ? ? subst_xy P];
+
+<<> ap_ Bool Prop P y = Eq_Bool (f x) (f y);
+
+<> Refine App ? ? use_P;
+
+<> Refine App ? ? Eq_Bool_refl;
+
+<> ReturnAll;
+
+<> resp_Eq_Bool;
+
+

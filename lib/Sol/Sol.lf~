@@ -1,0 +1,101 @@
+> module Sol where;
+
+Prop is a Universe.
+
+> [Prop : Type];
+
+FA: (Type?) Constructor for Prop.
+
+> [FA : (A : Type)
+>       (_ : (_ : A) Prop)
+>       Prop
+>       ];
+
+
+%-------------------------------------------------------------------------------
+Mapping from Universe of Prop back to Type (ie, decoding).
+
+> [Prf : (_ : Prop) Type];
+
+
+
+%-------------------------------------------------------------------------------
+LL - constructor for proofs of FA propositions
+
+> [LL : (A:Type)
+>		(P:(_ : A) Prop)
+>		(_ : (x:A)Prf(P x))
+>		Prf(FA A P)
+>		];
+
+
+%-------------------------------------------------------------------------------
+Elimination of proofs of propositions
+
+Given z, a proof of FA(A,P), eliminate to produce another prop C_FA(z).
+
+> [E_FA :	(A:Type)
+>			(P:(_ : A) Prop)
+>			(C_FA:(_ : Prf(FA A P)) Prop) 
+>			(_:(g:(x:A)Prf(P x))
+>			   Prf(C_FA(LL A P g)) )
+>			(z:Prf(FA A P))
+>			Prf(C_FA z)
+>			];
+
+NB does the conjecture about redundancy of matching (eg in args A,B below)
+   as opposed to non-linear pattern matching apply here? I ASSUME it does.
+
+> SimpleElimRule FA E_FA 5
+>    [ LL 3 
+>         = [A:Type]
+>           [P:(_:A) Prop]
+>           [C_FA:(_ : Prf(FA A P)) Prop]
+>           [f:(g:(x:A)Prf(P x))Prf(C_FA(LL A P g))]
+>           [B:Type]
+>           [Q:(_ : B) Prop]
+>           [g:(x:A)Prf(P x)]
+>           f g 
+>         : (A:Type)
+>           (P:(_ : A) Prop)
+>           (C_FA:(_ : Prf(FA A P)) Prop) 
+>           (f:(g:(x:A)Prf(P x))Prf(C_FA(LL A P g)))
+>           (B:Type)
+>           (Q:(_ : B) Prop)
+>           (g:(x:A)Prf(P x))
+>           Prf(C_FA(LL A P g)) ];
+
+
+
+%-------------------------------------------------------------------------------
+Specialised Elim operator, FA P, a => P(a)
+
+> [ App =                -- explicit version
+>        [A:Type]
+>        [P:(_ : A) Prop]
+>        [F:Prf(FA A P)]
+>        [a:A]
+>        E_FA 
+>            A
+>            P
+>            ([G:Prf(FA A P)]P a)
+>            ([g:(x:A)Prf(P x)]g a)
+>            F
+>    ];
+
+
+%-------------------------------------------------------------------------------
+Implication
+	- non-dependent FA...
+	- this is the arrow that used in the rest of this file.
+
+> [Imp [P1, P2:Prop] = FA (Prf P1) ([x:Prf P1]P2) ];
+
+> [(=>) = Imp]
+
+
+---
+Want the following principle: {P,Q:Prp}(Prf (Imp P Q))->(Prf P)->Prf Q
+This corresponds to App...
+
+> [imp_to_DP = App];
